@@ -1,0 +1,1186 @@
+openapi: 3.0.0
+info:
+  title: StudyFlowAI API
+  version: v1
+  description: API für die StudyFlowAI Plattform zur Lernplanung und -unterstützung.
+
+servers:
+  - url: http://localhost:3000/api # Beispiel URL, anpassen!
+    description: Lokaler Entwicklungsserver
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+        # Weitere Benutzerfelder nach Bedarf
+    AuthPayload:
+      type: object
+      properties:
+        accessToken:
+          type: string
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Module:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        description:
+          type: string
+        # Weitere Modulfelder
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        moduleId:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+        # Weitere Projektfelder
+    Deadline:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        moduleId:
+          type: integer
+          nullable: true
+        projectId:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          type: string
+          format: date-time
+        # Weitere Fristenfelder
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        moduleId:
+          type: integer
+          nullable: true
+        projectId:
+          type: integer
+          nullable: true
+        deadlineId:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+        isCompleted:
+          type: boolean
+          default: false
+        # Weitere Aufgabenfelder
+    LearningPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        description:
+          type: string
+        # Weitere Lernplanfelder
+    LearningPlanContent:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        learningPlanId:
+          type: integer
+        title:
+          type: string
+        url:
+          type: string
+        # Weitere Inhaltsfelder
+    PomodoroSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        taskId:
+          type: integer
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        duration:
+          type: integer # in Minuten
+        # Weitere Pomodoro Felder
+
+paths:
+  /auth/register:
+    post:
+      summary: Registriert einen neuen Benutzer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Benutzer erfolgreich registriert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthPayload'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/login:
+    post:
+      summary: Meldet einen existierenden Benutzer an.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Anmeldung erfolgreich.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthPayload'
+        '401':
+          description: Ungültige Anmeldeinformationen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /auth/me:
+    get:
+      summary: Ruft die Informationen des aktuell angemeldeten Benutzers ab.
+      security:
+        - bearerAuth:
+      responses:
+        '200':
+          description: Benutzerinformationen erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Nicht authentifiziert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pdfs/ocr:
+    post:
+      summary: Führt eine OCR-Analyse auf eine hochgeladene PDF-Datei durch.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                pdfFile:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OCR-Analyse erfolgreich. Gibt den extrahierten Text zurück.
+          content:
+            text/plain: {}
+        '400':
+          description: Fehler beim Hochladen oder der OCR-Analyse.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pdfs/merge:
+    post:
+      summary: Fügt mehrere hochgeladene PDF-Dateien zusammen.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                pdfFiles:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: PDFs erfolgreich zusammengefügt. Gibt die URL oder einen Download-Link zur neuen PDF zurück.
+          # Anpassen der Antwort nach Bedarf
+        '400':
+          description: Fehler beim Hochladen oder Zusammenfügen der PDFs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pdfs/split:
+    post:
+      summary: Teilt eine hochgeladene PDF-Datei in mehrere Dateien auf.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                pdfFile:
+                  type: string
+                  format: binary
+                pageRanges: # Optional: Angabe der zu extrahierenden Seitenbereiche
+                  type: string
+                  example: "1-5, 7, 9-12"
+      responses:
+        '200':
+          description: PDF erfolgreich aufgeteilt. Gibt eine Liste von URLs oder Download-Links zu den neuen PDFs zurück.
+          # Anpassen der Antwort nach Bedarf
+        '400':
+          description: Fehler beim Hochladen oder Aufteilen der PDF.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules:
+    get:
+      summary: Ruft alle Module des aktuellen Benutzers ab.
+      security:
+        - bearerAuth:
+      responses:
+        '200':
+          description: Module erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+    post:
+      summary: Erstellt ein neues Modul.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+      responses:
+        '201':
+          description: Modul erfolgreich erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules/{moduleId}:
+    get:
+      summary: Ruft ein spezifisches Modul ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Modul erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '404':
+          description: Modul nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Aktualisiert ein spezifisches Modul.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+      responses:
+        '200':
+          description: Modul erfolgreich aktualisiert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Modul nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Löscht ein spezifisches Modul.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Modul erfolgreich gelöscht.
+        '404':
+          description: Modul nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects:
+    get:
+      summary: Ruft alle Projekte des aktuellen Benutzers ab.
+      security:
+        - bearerAuth:
+      responses:
+        '200':
+          description: Projekte erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      summary: Erstellt ein neues Projekt.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Projekt erfolgreich erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{projectId}:
+    get:
+      summary: Ruft ein spezifisches Projekt ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Projekt erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: Projekt nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Aktualisiert ein spezifisches Projekt.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: Projekt erfolgreich aktualisiert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Projekt nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Löscht ein spezifisches Projekt.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Projekt erfolgreich gelöscht.
+        '404':
+          description: Projekt nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /modules/{moduleId}/projects:
+    get:
+      summary: Ruft alle Projekte eines spezifischen Moduls ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Projekte erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '404':
+          description: Modul nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /deadlines:
+    get:
+      summary: Ruft alle Fristen des aktuellen Benutzers ab.
+      security:
+        - bearerAuth:
+      responses:
+        '200':
+          description: Fristen erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Deadline'
+    post:
+      summary: Erstellt eine neue Frist.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deadline'
+      responses:
+        '201':
+          description: Frist erfolgreich erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deadline'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /deadlines/{deadlineId}:
+    get:
+      summary: Ruft eine spezifische Frist ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: deadlineId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Frist erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deadline'
+        '404':
+          description: Frist nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Aktualisiert eine spezifische Frist.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: deadlineId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Deadline'
+      responses:
+        '200':
+          description: Frist erfolgreich aktualisiert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deadline'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Frist nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Löscht eine spezifische Frist.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: deadlineId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Frist erfolgreich gelöscht.
+        '404':
+          description: Frist nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /deadlines/ai-detect:
+    post:
+      summary: Sendet Text zur KI-basierten Erkennung von Terminen und Fristen.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+      responses:
+        '200':
+          description: KI-Erkennung erfolgreich. Gibt eine Liste von erkannten Terminen/Fristen zurück.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    dueDate:
+                      type: string
+                      format: date-time
+        '400':
+          description: Fehler bei der KI-Erkennung.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks:
+    get:
+      summary: Ruft alle Aufgaben des aktuellen Benutzers ab.
+      security:
+        - bearerAuth:
+      responses:
+        '200':
+          description: Aufgaben erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    post:
+      summary: Erstellt eine neue Aufgabe.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Aufgabe erfolgreich erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/{taskId}:
+    get:
+      summary: Ruft eine spezifische Aufgabe ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Aufgabe erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Aktualisiert eine spezifische Aufgabe.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Aufgabe erfolgreich aktualisiert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Löscht eine spezifische Aufgabe.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Aufgabe erfolgreich gelöscht.
+        '404':
+          description: Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/ai-create:
+    post:
+      summary: Generiert Aufgaben basierend auf einer Beschreibung (KI-gestützt).
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+        responses:
+          '200':
+            description: Aufgaben erfolgreich generiert. Gibt eine Liste von Aufgaben zurück.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Task'
+          '400':
+            description: Fehler bei der KI-Aufgabengenerierung.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+  /learning-plans:
+    get:
+      summary: Ruft alle Lernpläne des aktuellen Benutzers ab.
+      security:
+        - bearerAuth:
+      responses:
+        '200':
+          description: Lernpläne erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearningPlan'
+    post:
+      summary: Erstellt einen neuen Lernplan.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearningPlan'
+      responses:
+        '201':
+          description: Lernplan erfolgreich erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningPlan'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /learning-plans/{learningPlanId}:
+    get:
+      summary: Ruft einen spezifischen Lernplan ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lernplan erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningPlan'
+        '404':
+          description: Lernplan nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Aktualisiert einen spezifischen Lernplan.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearningPlan'
+      responses:
+        '200':
+          description: Lernplan erfolgreich aktualisiert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningPlan'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Lernplan nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Löscht einen spezifischen Lernplan.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Lernplan erfolgreich gelöscht.
+        '404':
+          description: Lernplan nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /learning-plans/{learningPlanId}/content:
+    post:
+      summary: Fügt Inhalt zu einem Lernplan hinzu.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearningPlanContent'
+      responses:
+        '201':
+          description: Inhalt erfolgreich hinzugefügt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningPlanContent'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Lernplan nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /learning-plans/{learningPlanId}/content/{contentId}:
+    delete:
+      summary: Entfernt Inhalt aus einem Lernplan.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: contentId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Inhalt erfolgreich entfernt.
+        '404':
+          description: Lernplan oder Inhalt nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /learning-plans/{learningPlanId}/tasks:
+    post:
+      summary: Fügt eine Aufgabe zu einem Lernplan hinzu.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskId:
+                  type: integer
+      responses:
+        '201':
+          description: Aufgabe erfolgreich zum Lernplan hinzugefügt.
+          # Ggf. Response mit dem aktualisierten Lernplan
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Lernplan oder Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /learning-plans/{learningPlanId}/tasks/{taskId}:
+    delete:
+      summary: Entfernt eine Aufgabe aus einem Lernplan.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: learningPlanId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Aufgabe erfolgreich aus dem Lernplan entfernt.
+        '404':
+          description: Lernplan oder Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pomodoros:
+    post:
+      summary: Startet eine neue Pomodoro-Sitzung für eine Aufgabe.
+      security:
+        - bearerAuth:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskId:
+                  type: integer
+      responses:
+        '201':
+          description: Pomodoro-Sitzung erfolgreich gestartet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PomodoroSession'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pomodoros/{pomodoroId}:
+    put:
+      summary: Beendet oder aktualisiert eine laufende Pomodoro-Sitzung.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: pomodoroId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false # Optional, je nach gewünschten Aktualisierungen
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PomodoroSession'
+      responses:
+        '200':
+          description: Pomodoro-Sitzung erfolgreich aktualisiert.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PomodoroSession'
+        '400':
+          description: Fehlerhafte Anfrage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Pomodoro-Sitzung nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /pomodoros/task/{taskId}:
+    get:
+      summary: Ruft die Pomodoro-Historie für eine spezifische Aufgabe ab.
+      security:
+        - bearerAuth:
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pomodoro-Historie erfolgreich abgerufen.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PomodoroSession'
+        '404':
+          description: Aufgabe nicht gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
