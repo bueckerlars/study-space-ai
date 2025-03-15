@@ -1,7 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
 import serverConfig from './config/serverConfig';
+import swaggerSpecs from '../swagger';
 
 class Server {
   private app: Express;
@@ -12,6 +14,7 @@ class Server {
     this.port = port;
     this.configureMiddleware();
     this.configureRoutes();
+    this.setupSwagger();
   }
 
   private configureMiddleware(): void {
@@ -31,6 +34,11 @@ class Server {
     
     // Auth routes
     this.app.use('/api/auth', authRoutes);
+  }
+
+  private setupSwagger(): void {
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+    console.log(`Swagger UI available at http://localhost:${this.port}/api-docs`);
   }
 
   public start(): void {
