@@ -6,3 +6,4 @@ export * from './Task';
 export * from './LearningPlan';
 export * from './LearningPlanContent';
 export * from './PomodoroSession';
+export * from './DatabaseConfig';
