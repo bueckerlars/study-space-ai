@@ -1,7 +1,4 @@
-import * as dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
+import serverConfig from '../config/serverConfig';
 
 // Define log levels
 export enum LogLevel {
@@ -15,8 +12,8 @@ export class LoggerService {
   private level: LogLevel;
   
   constructor() {
-    // Get log level from environment variable, default to INFO if not set
-    const configuredLevel = process.env.LOG_LEVEL || 'INFO';
+    // Get log level from serverConfig, default to INFO if not set
+    const configuredLevel = serverConfig.logLevel.toUpperCase();
     this.level = this.getLogLevelFromString(configuredLevel);
     
     this.info(`Logger initialized with level: ${LogLevel[this.level]}`);
