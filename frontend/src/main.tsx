@@ -1,18 +1,24 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
 
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
 import LoginPage from './pages/auth/LoginPage.tsx'
 import RegisterPage from './pages/auth/RegisterPage.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
 import { AuthProvider } from './provider/AuthProvider.tsx'
+import { Dashboard } from './pages/Dashboard.tsx'
+import AppLayout from './components/AppLayout.tsx'
+import { ProjectsPage } from './pages/ProjectsPage.tsx'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Outlet />,
+    element: (
+      <AppLayout>
+        <Outlet />
+      </AppLayout>
+    ),
     children: [
       {
         path: '/',
@@ -30,7 +36,31 @@ const router = createBrowserRouter([
         path: 'app',
         element: (
           <ProtectedRoute>
-            <App />
+              <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'projects',
+        element: (
+          <ProtectedRoute>
+              <ProjectsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'calendar',
+        element: (
+          <ProtectedRoute>
+              <h1>Calendar</h1>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'tasks',
+        element: (
+          <ProtectedRoute>
+              <h1>Tasks</h1>
           </ProtectedRoute>
         ),
       }
