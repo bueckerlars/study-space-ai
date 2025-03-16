@@ -34,6 +34,14 @@ const router = createBrowserRouter([
         element: <RegisterPage />,
       },
       {
+        path: "settings",
+        element: (
+          <ProtectedRoute>
+              <h1>Settings</h1>
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: 'app',
         element: (
           <ProtectedRoute>
