@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import { User } from "../../../shared/types/User";
+import { User } from "../types/User";
 import { useAuth } from "@/provider/AuthProvider";
 import { Navigate } from "react-router-dom";
 

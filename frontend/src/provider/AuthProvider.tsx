@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { loginRequest, registerRequest, fetchUserRequest, refreshAccessTokenRequest, logoutRequest } from '../services/ApiService';
-import { User } from '../../../shared/types';
+import { User } from '../types';
 
 // Define AuthContextType
 interface AuthContextType {
