@@ -6,7 +6,7 @@ interface FileCreationAttributes extends Optional<FileType, 'file_id'> {}
 class File extends Model<FileType, FileCreationAttributes> implements FileType {
   public file_id!: string;
   public user_id!: number;
-  public project_id?: number;
+  public project_id!: number;
   public name!: string;
   public size!: number;
   public type!: string;
