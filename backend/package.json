@@ -2,15 +2,16 @@
   "name": "study-space-ai-backend",
   "version": "1.0.0",
   "description": "Backend API für Study Space AI",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.ts",
+    "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --outDir dist"
   },
   "dependencies": {
     "@types/sequelize": "^4.28.20",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/swagger-jsdoc": "^6.0.4",

@@ -1,8 +1,12 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api/auth',
-  withCredentials: true,
+  // baseURL: 'http://study-space-ai-backend-1:5066',
+  baseURL: 'http://localhost:5066/api/auth',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // This ensures cookies are sent with requests
 });
 
 export const loginRequest = (email: string, password: string) => {

@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
 import serverConfig from './config/serverConfig';
 import swaggerSpecs from '../swagger';
+import cors from 'cors';
 
 class Server {
   private app: Express;
@@ -21,6 +22,14 @@ class Server {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser()); // Add cookie parser middleware
+
+    this.app.use(cors({
+      // origin: '*', // Allow all origins
+      origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+      credentials: true, // Required for cookies to be sent
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }));
   }
 
   private configureRoutes(): void {

@@ -24,8 +24,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await loginRequest(email, password);
       setAuthToken(response.data.accessToken);
       await fetchUser();
+      return response.data;
     } catch (error) {
       console.error('Login failed:', error);
+      throw error;
     }
   };
 
@@ -34,18 +36,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await registerRequest(email, password, username);
       setAuthToken(response.data.accessToken);
       await fetchUser();
+      return response.data;
     } catch (error) {
       console.error('Registration failed:', error);
+      throw error;
     }
   };
 
   const fetchUser = async () => {
+    if (!authToken) return;
+    
     try {
       const response = await fetchUserRequest(authToken);
       setUser(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Fetching user failed:', error);
-      logout();
+      // If token is invalid, try to refresh it once
+      try {
+        await refreshAccessToken();
+        const response = await fetchUserRequest(authToken);
+        setUser(response.data);
+      } catch (refreshError) {
+        // If refresh fails, logout the user
+        logout();
+      }
+      setLoading(false);
     }
   };
 
@@ -53,8 +69,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await refreshAccessTokenRequest();
       setAuthToken(response.data.accessToken);
+      return response.data;
     } catch (error) {
+      console.error('Token refresh failed:', error);
+      // Clear auth state if refresh fails
       logout();
+      throw error;
     }
   };
 
@@ -63,18 +83,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await logoutRequest();
     } catch (error) {
       console.error('Logout failed:', error);
+    } finally {
+      // Always clear local auth state, even if the API call fails
+      setAuthToken(null);
+      setUser(null);
     }
-    setAuthToken(null);
-    setUser(null);
   };
 
   useEffect(() => {
+    // Try to get user data if we have a token
     if (authToken) {
       fetchUser();
-      const interval = setInterval(refreshAccessToken, 5 * 60 * 1000); // Refresh token every 5 minutes
+      
+      // Set up token refresh interval
+      const refreshInterval = 4.5 * 60 * 1000; // Refresh every 4.5 minutes (slightly before 5min expiry)
+      const interval = setInterval(refreshAccessToken, refreshInterval);
+      
       return () => clearInterval(interval);
+    } else {
+      // Try to refresh the token on initial load to recover session
+      refreshAccessToken().catch(() => {
+        setLoading(false);
+      });
     }
-    setLoading(false);
   }, [authToken]);
 
   return (

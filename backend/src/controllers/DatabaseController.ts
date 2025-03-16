@@ -23,6 +23,10 @@ const models = initModels(databaseService.getSequelize());
 export class DatabaseController {
   // Store model references
   private models = models;
+
+  constructor() {
+    databaseService.syncModels();
+  }
   
   /**
    * Generic method to create a record of any model type

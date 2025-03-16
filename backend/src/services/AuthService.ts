@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import databaseController from '../controllers/DatabaseController';
 import { User } from '../types';
 import logger from './logger';

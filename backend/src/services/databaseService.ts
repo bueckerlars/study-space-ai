@@ -1,6 +1,7 @@
 import { Sequelize, Model, ModelStatic, Transaction, Op, WhereOptions, FindOptions } from 'sequelize';
 import databaseConfig from '../config/databaseConfig';
 import logger from './logger';
+import initModels from '../models';
 
 class DatabaseService {
   private sequelize: Sequelize;
@@ -222,6 +223,7 @@ class DatabaseService {
   public async syncModels(force: boolean = false): Promise<void> {
     try {
       logger.info(`Syncing database models (force: ${force})`);
+      initModels(this.sequelize);
       await this.sequelize.sync({ force });
       logger.info('Database sync completed successfully');
     } catch (error) {

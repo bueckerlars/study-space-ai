@@ -1,17 +1,25 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useAuth } from "@/provider/AuthProvider"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const RegisterPage: React.FC = () => {
-  const { register } = useAuth()
+  const { register, user } = useAuth()
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
+
+    // Redirect if user is already logged in
+    useEffect(() => {
+      if (user) {
+        navigate("/app");
+      }
+    }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,6 +29,7 @@ const RegisterPage: React.FC = () => {
     }
     try {
       await register(email, password, username)
+      navigate("/app") // Redirect after successful login
     } catch (err) {
       setError("Registration failed. Please try again.")
     }

@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import AuthService from '../services/AuthService';
 import serverConfig from '../config/serverConfig';
+import databaseController from './DatabaseController';
+import { logger } from '../services/logger';
 
 class AuthController {
   // Cookie configuration
-  private readonly COOKIE_OPTIONS = {
+  private static readonly COOKIE_OPTIONS = {
     httpOnly: true,       // Prevents client-side JS from reading the cookie
     secure: serverConfig.environment === 'production', // Only send over HTTPS in production
     sameSite: 'strict' as const,  // Prevents the cookie from being sent in cross-site requests
@@ -15,7 +17,15 @@ class AuthController {
   async register(req: Request, res: Response): Promise<void> {
     try {
       const { email, password, username } = req.body;
-      const role = 'user'; // Always set role to 'user'
+      let role = 'user'; // Default role is 'user'
+      
+      const users = await databaseController.findAllUsers();
+      logger.debug(`Number of users: ${users.length}`);
+      
+      // Check if this is the first user
+      if (users.length === 0) {
+        role = 'admin'; // Assign 'admin' role to the first user
+      }
       
       // Validate input
       if (!email || !password || !username) {
@@ -25,13 +35,18 @@ class AuthController {
       
       // Register user
       const { accessToken, refreshToken } = await AuthService.register(email, password, username, role);
-      
+      logger.debug(`Access token: ${accessToken}`);
+      logger.debug(`Refresh token: ${refreshToken}`);
       // Set refresh token in HTTP-only cookie
-      res.cookie('refreshToken', refreshToken, this.COOKIE_OPTIONS);
+      res.cookie('refreshToken', refreshToken, AuthController.COOKIE_OPTIONS);
+      
+      // Log successful registration
+      logger.info(`User registered: ${email}`);
       
       // Return only the access token in the response body
       res.status(201).json({ accessToken });
     } catch (error: any) {
+      logger.error(`Registration error: ${error.message}`);
       res.status(400).json({ message: error.message });
     }
   }
@@ -50,19 +65,25 @@ class AuthController {
       const { accessToken, refreshToken } = await AuthService.login(email, password);
       
       // Set refresh token in HTTP-only cookie
-      res.cookie('refreshToken', refreshToken, this.COOKIE_OPTIONS);
+      res.cookie('refreshToken', refreshToken, AuthController.COOKIE_OPTIONS);
+      
+      // Log successful login
+      logger.info(`User logged in: ${email}`);
       
       // Return only the access token in the response body
       res.status(200).json({ accessToken });
     } catch (error: any) {
+      logger.error(`Login error: ${error.message}`);
       res.status(401).json({ message: error.message });
     }
   }
 
   async refresh(req: Request, res: Response): Promise<void> {
+    logger.debug("Refresh token request");
     try {
       // Get refresh token from cookie
       const refreshToken = req.cookies.refreshToken;
+      logger.debug(`Refresh token: ${refreshToken}`);
       
       // Validate input
       if (!refreshToken) {
@@ -73,8 +94,12 @@ class AuthController {
       // Generate new access token
       const result = await AuthService.refreshAccessToken(refreshToken);
       
+      // Log token refresh
+      logger.info(`Access token refreshed`);
+      
       res.status(200).json(result);
     } catch (error: any) {
+      logger.error(`Token refresh error: ${error.message}`);
       res.status(401).json({ message: error.message });
     }
   }
@@ -90,10 +115,14 @@ class AuthController {
       }
       
       // Clear the refresh token cookie
-      res.clearCookie('refreshToken', this.COOKIE_OPTIONS);
+      res.clearCookie('refreshToken', AuthController.COOKIE_OPTIONS);
+      
+      // Log successful logout
+      logger.info(`User logged out`);
       
       res.status(200).json({ message: 'Logged out successfully' });
     } catch (error: any) {
+      logger.error(`Logout error: ${error.message}`);
       res.status(500).json({ message: error.message });
     }
   }
@@ -106,12 +135,16 @@ class AuthController {
         return;
       }
       
+      // Log user data retrieval
+      logger.info(`User data retrieved: ${req.user.email}`);
+      
       // Return user data (without sensitive information)
       res.status(200).json({
         id: req.user.id,
         email: req.user.email
       });
     } catch (error: any) {
+      logger.error(`User data retrieval error: ${error.message}`);
       res.status(401).json({ message: error.message });
     }
   }

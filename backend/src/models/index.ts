@@ -8,6 +8,7 @@ import initTaskModel from './Task';
 import initLearningPlanModel from './LearningPlan';
 import initLearningPlanContentModel from './LearningPlanContent';
 import initPomodoroSessionModel from './PomodoroSession';
+import logger from '../services/logger';
 
 // Function to initialize all models
 export const initModels = (sequelize: Sequelize) => {
@@ -31,6 +32,7 @@ export const initModels = (sequelize: Sequelize) => {
   if (typeof LearningPlanContent.associate === 'function') LearningPlanContent.associate({ LearningPlan });
   if (typeof PomodoroSession.associate === 'function') PomodoroSession.associate({ User, Task });
 
+  logger.info('Models initialized');
   return {
     User,
     Module, 

@@ -32,9 +32,6 @@ const router = express.Router();
  *                 type: string
  *               username:
  *                 type: string
- *               role:
- *                 type: string
- *                 default: user
  *     responses:
  *       201:
  *         description: User created successfully
