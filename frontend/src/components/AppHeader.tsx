@@ -5,6 +5,7 @@ import { Label } from "./ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { SettingsIcon, LogOutIcon } from "lucide-react";
+import { ToggleThemeButton } from "./ToggleThemeButton";
 
 const AppHeader = () => {
     const { state } = useSidebar();
@@ -30,7 +31,13 @@ const AppHeader = () => {
         
         {/* Flexibler Zwischenraum */}
         <div className="flex-1" />
-        
+
+        {/* Theme wechseln */}
+        <ToggleThemeButton />
+
+        {/* Flexibler Zwischenraum */}
+        <div className="mx-1" />
+
         {/* User Avatar mit Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="focus-visible:outline-none">

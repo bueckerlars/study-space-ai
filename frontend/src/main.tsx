@@ -10,6 +10,7 @@ import { AuthProvider } from './provider/AuthProvider.tsx'
 import { Dashboard } from './pages/Dashboard.tsx'
 import AppLayout from './components/AppLayout.tsx'
 import { ProjectsPage } from './pages/ProjectsPage.tsx'
+import { ThemeProvider } from './provider/ThemeProvider.tsx'
 
 const router = createBrowserRouter([
   {
@@ -70,8 +71,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 )
