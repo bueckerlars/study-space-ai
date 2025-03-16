@@ -10,7 +10,7 @@ class AuthController {
     httpOnly: true,       // Prevents client-side JS from reading the cookie
     secure: serverConfig.environment === 'production', // Only send over HTTPS in production
     sameSite: 'strict' as const,  // Prevents the cookie from being sent in cross-site requests
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+    // maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     path: '/api/auth'     // Cookie is only sent to this path
   };
 
