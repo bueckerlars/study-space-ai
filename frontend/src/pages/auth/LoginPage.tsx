@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useAuth } from "@/provider/AuthProvider"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,14 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
+  const emailRef = useRef<HTMLInputElement>(null)
+  
+  // Focus email field on component mount
+  useEffect(() => {
+    if (emailRef.current) {
+      emailRef.current.focus()
+    }
+  }, [])
   
   // Redirect if user is already logged in
   useEffect(() => {
@@ -31,7 +39,7 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login</CardTitle>
@@ -47,6 +55,7 @@ const LoginPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                ref={emailRef}
               />
             </div>
             <div className="space-y-2">

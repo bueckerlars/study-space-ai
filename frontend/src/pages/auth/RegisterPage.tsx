@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useAuth } from "@/provider/AuthProvider"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -13,14 +13,33 @@ const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean | null>(null)
   const navigate = useNavigate()
+  const usernameRef = useRef<HTMLInputElement>(null)
 
-    // Redirect if user is already logged in
-    useEffect(() => {
-      if (user) {
-        navigate("/app");
-      }
-    }, [user, navigate]);
+  // Focus username field on component mount
+  useEffect(() => {
+    if (usernameRef.current) {
+      usernameRef.current.focus()
+    }
+  }, [])
+
+  // Check if passwords match whenever either password field changes
+  useEffect(() => {
+    // Only validate if both fields have values
+    if (password && confirmPassword) {
+      setPasswordsMatch(password === confirmPassword)
+    } else {
+      setPasswordsMatch(null)
+    }
+  }, [password, confirmPassword])
+
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/app");
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +56,7 @@ const RegisterPage: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Register</CardTitle>
@@ -53,6 +72,7 @@ const RegisterPage: React.FC = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                ref={usernameRef}
               />
             </div>
             <div className="space-y-2">
@@ -86,7 +106,11 @@ const RegisterPage: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                className={passwordsMatch === false ? "border-red-500" : ""}
               />
+              {passwordsMatch === false && (
+                <p className="text-sm text-red-500">Passwords do not match</p>
+              )}
             </div>
             {error && <p className="text-red-500">{error}</p>}
             <Button type="submit" variant="default" className="w-full">
