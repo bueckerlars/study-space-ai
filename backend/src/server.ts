@@ -6,6 +6,8 @@ import serverConfig from './config/serverConfig';
 import swaggerSpecs from '../swagger';
 import cors from 'cors';
 import logger from './services/logger';
+import fileRoutes from './routes/fileRoutes';
+import projectRoutes from './routes/projectRoutes';
 
 class Server {
   private app: Express;
@@ -45,6 +47,8 @@ class Server {
     
     // Auth routes
     this.app.use('/api/auth', authRoutes);
+    this.app.use('/api/projects', projectRoutes);
+    this.app.use('/api/files', fileRoutes);
   }
 
   private setupSwagger(): void {

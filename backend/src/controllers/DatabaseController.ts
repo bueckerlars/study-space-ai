@@ -9,6 +9,7 @@ import {
   Task, 
   PomodoroSession
 } from '../types';
+import { File } from '../types/File';
 
 // Initialize models
 const models = initModels(databaseService.getSequelize());
@@ -267,6 +268,35 @@ export class DatabaseController {
 
   public async deletePomodoroSession(where: WhereOptions): Promise<number> {
     return this.delete('PomodoroSession', where);
+  }
+
+  // File model methods
+  public async createFile(data: Partial<File>): Promise<File | null> {
+    return this.create<File>('File', data);
+  }
+
+  public async findAllFiles(options: FindOptions = {}): Promise<File[]> {
+    return this.findAll<File>('File', options);
+  }
+
+  public async findFilesByUser(userId: number): Promise<File[]> {
+    return this.findAll<File>('File', { where: { user_id: userId } });
+  }
+
+  public async findFilesByProject(projectId: number): Promise<File[]> {
+    return this.findAll<File>('File', { where: { project_id: projectId } });
+  }
+
+  public async findFileById(id: string): Promise<File | null> {
+    return this.findById<File>('File', id);
+  }
+
+  public async updateFile(data: Partial<File>, where: WhereOptions): Promise<[number, File[]]> {
+    return this.update<File>('File', data, where);
+  }
+
+  public async deleteFile(where: WhereOptions): Promise<number> {
+    return this.delete('File', where);
   }
 }
 

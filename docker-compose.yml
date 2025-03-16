@@ -24,6 +24,8 @@ services:
       - DB_DIALECT=${DB_DIALECT}
       - JWT_SECRET=${JWT_SECRET}
       - LOG_LEVEL=DEBUG
+    volumes:
+      - upload_files:/app/uploads  # Mount the volume for file storage
     depends_on:
       - db
 
@@ -40,3 +42,4 @@ services:
 
 volumes:
   db_data:
+  upload_files:  # Define a volume for file uploads

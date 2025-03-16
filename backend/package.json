@@ -10,7 +10,9 @@
     "build": "tsc --outDir dist"
   },
   "dependencies": {
+    "@types/multer": "^1.4.12",
     "@types/sequelize": "^4.28.20",
+    "@types/uuid": "^10.0.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -18,10 +20,12 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "pg": "^8.14.0",
     "sequelize": "^6.37.6",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
