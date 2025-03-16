@@ -15,7 +15,7 @@ class AuthService {
   private readonly REFRESH_TOKEN_SECRET = serverConfig.jwtSecret + '-refresh'; // Using jwtSecret as base
   private readonly REFRESH_TOKEN_EXPIRY = '7d'; // Longer expiry for refresh tokens
 
-  async register(email: string, password: string): Promise<{ accessToken: string, refreshToken: string }> {
+  async register(email: string, password: string, username: string, role: string): Promise<{ accessToken: string, refreshToken: string }> {
     logger.info(`Registration attempt for email: ${email}`);
     
     // Check if user already exists
@@ -31,7 +31,9 @@ class AuthService {
     // Create new user
     const newUser = await databaseController.createUser({
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      username,
+      role
     });
 
     if (!newUser) {

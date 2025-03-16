@@ -7,6 +7,8 @@ class User extends Model<UserType, UserCreationAttributes> implements UserType {
   public user_id!: number;
   public email!: string;
   public password!: string;
+  public username!: string;
+  public role!: string;
   public created_at!: Date;
   public updated_at!: Date;
 
@@ -37,6 +39,15 @@ export default (sequelize: Sequelize) => {
       password: {
         type: DataTypes.STRING(255),
         allowNull: false,
+      },
+      username: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      role: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'user',
       },
       created_at: {
         type: DataTypes.DATE,

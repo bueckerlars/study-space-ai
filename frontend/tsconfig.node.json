@@ -6,6 +6,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    "baseUrl": ".",
+        "paths": {
+          "@/*": ["./src/*"],
+          "@shared-types/*": ["../shared-types/*"],
+        },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

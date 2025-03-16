@@ -30,6 +30,11 @@ const router = express.Router();
  *                 minLength: 6
  *               name:
  *                 type: string
+ *               username:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 default: user
  *     responses:
  *       201:
  *         description: User created successfully
@@ -94,15 +99,6 @@ router.post('/login', AuthController.login);
  *   post:
  *     summary: Refresh authentication token
  *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               refreshToken:
- *                 type: string
  *     responses:
  *       200:
  *         description: New token generated
@@ -115,6 +111,8 @@ router.post('/login', AuthController.login);
  *                   type: string
  *       401:
  *         description: Invalid or expired refresh token
+ *     security:
+ *       - cookieAuth: []
  */
 router.post('/refresh', AuthController.refresh);
 

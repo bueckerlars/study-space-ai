@@ -14,16 +14,17 @@ class AuthController {
 
   async register(req: Request, res: Response): Promise<void> {
     try {
-      const { email, password } = req.body;
+      const { email, password, username } = req.body;
+      const role = 'user'; // Always set role to 'user'
       
       // Validate input
-      if (!email || !password) {
-        res.status(400).json({ message: 'Email and password are required' });
+      if (!email || !password || !username) {
+        res.status(400).json({ message: 'Email, password, and username are required' });
         return;
       }
       
       // Register user
-      const { accessToken, refreshToken } = await AuthService.register(email, password);
+      const { accessToken, refreshToken } = await AuthService.register(email, password, username, role);
       
       // Set refresh token in HTTP-only cookie
       res.cookie('refreshToken', refreshToken, this.COOKIE_OPTIONS);
