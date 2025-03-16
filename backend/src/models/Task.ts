@@ -6,7 +6,6 @@ interface TaskCreationAttributes extends Optional<TaskType, 'task_id'> {}
 class Task extends Model<TaskType, TaskCreationAttributes> implements TaskType {
   public task_id!: number;
   public user_id!: number;
-  public module_id?: number;
   public project_id?: number;
   public deadline_id?: number;
   public title!: string;
@@ -18,10 +17,8 @@ class Task extends Model<TaskType, TaskCreationAttributes> implements TaskType {
   // Associations
   static associate(models: any) {
     Task.belongsTo(models.User, { foreignKey: 'user_id' });
-    Task.belongsTo(models.Module, { foreignKey: 'module_id' });
     Task.belongsTo(models.Project, { foreignKey: 'project_id' });
     Task.belongsTo(models.Deadline, { foreignKey: 'deadline_id' });
-    Task.belongsTo(models.LearningPlan, { foreignKey: 'learning_plan_id' });
     Task.hasMany(models.PomodoroSession, { foreignKey: 'task_id' });
   }
 }
@@ -40,14 +37,6 @@ export default (sequelize: Sequelize) => {
         references: {
           model: 'Users',
           key: 'user_id',
-        },
-      },
-      module_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'Modules',
-          key: 'module_id',
         },
       },
       project_id: {

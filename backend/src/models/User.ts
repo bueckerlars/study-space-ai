@@ -14,11 +14,9 @@ class User extends Model<UserType, UserCreationAttributes> implements UserType {
 
   // Associations
   static associate(models: any) {
-    User.hasMany(models.Module, { foreignKey: 'user_id' });
     User.hasMany(models.Project, { foreignKey: 'user_id' });
     User.hasMany(models.Deadline, { foreignKey: 'user_id' });
     User.hasMany(models.Task, { foreignKey: 'user_id' });
-    User.hasMany(models.LearningPlan, { foreignKey: 'user_id' });
     User.hasMany(models.PomodoroSession, { foreignKey: 'user_id' });
     User.hasMany(models.File, { foreignKey: 'user_id' });
   }
