@@ -3,6 +3,7 @@ import AuthService from '../services/AuthService';
 import serverConfig from '../config/serverConfig';
 import databaseController from './DatabaseController';
 import { logger } from '../services/logger';
+import { User } from '../types';
 
 class AuthController {
   // Cookie configuration
@@ -135,14 +136,28 @@ class AuthController {
         return;
       }
       
-      // Log user data retrieval
-      logger.info(`User data retrieved: ${req.user.email}`);
+      // Get the complete user data from the database using the ID
+      const userData = await databaseController.findUserById(req.user.id);
       
-      // Return user data (without sensitive information)
-      res.status(200).json({
-        id: req.user.id,
-        email: req.user.email
-      });
+      if (!userData) {
+        res.status(404).json({ message: 'User data not found' });
+        return;
+      }
+      
+      // Log user data retrieval
+      logger.info(`User data retrieved: ${userData.email}`);
+      
+      const userObject = {
+        user_id: userData.user_id,
+        email: userData.email,
+        username: userData.username,
+        role: userData.role,
+        created_at: userData.created_at,
+        updated_at: userData.updated_at
+      };
+      
+      // Return complete user data without the password
+      res.status(200).json(userObject);
     } catch (error: any) {
       logger.error(`User data retrieval error: ${error.message}`);
       res.status(401).json({ message: error.message });
