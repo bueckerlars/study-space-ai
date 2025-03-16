@@ -4,12 +4,9 @@ import logger from '../services/logger';
 import initModels from '../models';
 import {
   User,
-  Module,
   Project,
   Deadline,
   Task, 
-  LearningPlan,
-  LearningPlanContent,
   PomodoroSession
 } from '../types';
 
@@ -125,31 +122,6 @@ export class DatabaseController {
 
   public async deleteUser(where: WhereOptions): Promise<number> {
     return this.delete('User', where);
-  }
-
-  // Module model methods
-  public async createModule(data: Partial<Module>): Promise<Module | null> {
-    return this.create<Module>('Module', data);
-  }
-
-  public async findAllModules(options: FindOptions = {}): Promise<Module[]> {
-    return this.findAll<Module>('Module', options);
-  }
-
-  public async findModulesByUser(userId: number): Promise<Module[]> {
-    return this.findAll<Module>('Module', { where: { user_id: userId } });
-  }
-
-  public async findModuleById(id: number): Promise<Module | null> {
-    return this.findById<Module>('Module', id);
-  }
-
-  public async updateModule(data: Partial<Module>, where: WhereOptions): Promise<[number, Module[]]> {
-    return this.update<Module>('Module', data, where);
-  }
-
-  public async deleteModule(where: WhereOptions): Promise<number> {
-    return this.delete('Module', where);
   }
 
   // Project model methods

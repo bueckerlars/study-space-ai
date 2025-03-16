@@ -6,6 +6,7 @@ interface FileCreationAttributes extends Optional<FileType, 'file_id'> {}
 class File extends Model<FileType, FileCreationAttributes> implements FileType {
   public file_id!: string;
   public user_id!: number;
+  public project_id?: number;
   public name!: string;
   public size!: number;
   public type!: string;
@@ -20,6 +21,7 @@ class File extends Model<FileType, FileCreationAttributes> implements FileType {
   // Associations
   static associate(models: any) {
     File.belongsTo(models.User, { foreignKey: 'user_id' });
+    File.belongsTo(models.Project, { foreignKey: 'project_id' });
   }
 }
 
@@ -38,6 +40,14 @@ export default (sequelize: Sequelize) => {
           model: 'Users',
           key: 'user_id',
           },
+      },
+      project_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'Projects',
+          key: 'project_id',
+        },
       },
       name: {
         type: DataTypes.STRING(255),
