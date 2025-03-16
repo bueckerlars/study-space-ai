@@ -7,3 +7,4 @@ export * from './LearningPlan';
 export * from './LearningPlanContent';
 export * from './PomodoroSession';
 export * from './DatabaseConfig';
+export * from './File';

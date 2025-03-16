@@ -5,9 +5,8 @@ import initModuleModel from './Module';
 import initProjectModel from './Project';
 import initDeadlineModel from './Deadline';
 import initTaskModel from './Task';
-import initLearningPlanModel from './LearningPlan';
-import initLearningPlanContentModel from './LearningPlanContent';
 import initPomodoroSessionModel from './PomodoroSession';
+import initFileModel from './File';
 import logger from '../services/logger';
 
 // Function to initialize all models
@@ -18,19 +17,17 @@ export const initModels = (sequelize: Sequelize) => {
   const Project = initProjectModel(sequelize);
   const Deadline = initDeadlineModel(sequelize);
   const Task = initTaskModel(sequelize);
-  const LearningPlan = initLearningPlanModel(sequelize);
-  const LearningPlanContent = initLearningPlanContentModel(sequelize);
   const PomodoroSession = initPomodoroSessionModel(sequelize);
+  const File = initFileModel(sequelize);
 
   // Set up associations
-  if (typeof User.associate === 'function') User.associate({ Module, Project, Deadline, Task, LearningPlan, PomodoroSession });
+  if (typeof User.associate === 'function') User.associate({ Module, Project, Deadline, Task, PomodoroSession, File });
   if (typeof Module.associate === 'function') Module.associate({ User, Project, Deadline, Task });
   if (typeof Project.associate === 'function') Project.associate({ User, Module, Deadline, Task });
   if (typeof Deadline.associate === 'function') Deadline.associate({ User, Module, Project, Task });
-  if (typeof Task.associate === 'function') Task.associate({ User, Module, Project, Deadline, LearningPlan, PomodoroSession });
-  if (typeof LearningPlan.associate === 'function') LearningPlan.associate({ User, LearningPlanContent, Task });
-  if (typeof LearningPlanContent.associate === 'function') LearningPlanContent.associate({ LearningPlan });
+  if (typeof Task.associate === 'function') Task.associate({ User, Module, Project, Deadline, PomodoroSession });
   if (typeof PomodoroSession.associate === 'function') PomodoroSession.associate({ User, Task });
+  if (typeof File.associate === 'function') File.associate({ User });
 
   logger.info('Models initialized');
   return {
@@ -39,9 +36,8 @@ export const initModels = (sequelize: Sequelize) => {
     Project,
     Deadline,
     Task,
-    LearningPlan,
-    LearningPlanContent,
-    PomodoroSession
+    PomodoroSession,
+    File
   };
 };
 
@@ -52,9 +48,8 @@ export {
   initProjectModel,
   initDeadlineModel,
   initTaskModel,
-  initLearningPlanModel,
-  initLearningPlanContentModel,
-  initPomodoroSessionModel
+  initPomodoroSessionModel,
+  initFileModel
 };
 
 // Default export

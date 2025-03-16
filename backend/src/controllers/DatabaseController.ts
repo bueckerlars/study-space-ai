@@ -259,59 +259,6 @@ export class DatabaseController {
     return this.delete('Task', where);
   }
 
-  // LearningPlan model methods
-  public async createLearningPlan(data: Partial<LearningPlan>): Promise<LearningPlan | null> {
-    return this.create<LearningPlan>('LearningPlan', data);
-  }
-
-  public async findAllLearningPlans(options: FindOptions = {}): Promise<LearningPlan[]> {
-    return this.findAll<LearningPlan>('LearningPlan', options);
-  }
-
-  public async findLearningPlansByUser(userId: number): Promise<LearningPlan[]> {
-    return this.findAll<LearningPlan>('LearningPlan', { where: { user_id: userId } });
-  }
-
-  public async findLearningPlanById(id: number): Promise<LearningPlan | null> {
-    return this.findById<LearningPlan>('LearningPlan', id);
-  }
-
-  public async updateLearningPlan(data: Partial<LearningPlan>, where: WhereOptions): Promise<[number, LearningPlan[]]> {
-    return this.update<LearningPlan>('LearningPlan', data, where);
-  }
-
-  public async deleteLearningPlan(where: WhereOptions): Promise<number> {
-    return this.delete('LearningPlan', where);
-  }
-
-  // LearningPlanContent model methods
-  public async createLearningPlanContent(data: Partial<LearningPlanContent>): Promise<LearningPlanContent | null> {
-    return this.create<LearningPlanContent>('LearningPlanContent', data);
-  }
-
-  public async findAllLearningPlanContents(options: FindOptions = {}): Promise<LearningPlanContent[]> {
-    return this.findAll<LearningPlanContent>('LearningPlanContent', options);
-  }
-
-  public async findLearningPlanContentsByPlan(learningPlanId: number): Promise<LearningPlanContent[]> {
-    return this.findAll<LearningPlanContent>('LearningPlanContent', { 
-      where: { learning_plan_id: learningPlanId },
-      order: [['order', 'ASC']]
-    });
-  }
-
-  public async findLearningPlanContentById(id: number): Promise<LearningPlanContent | null> {
-    return this.findById<LearningPlanContent>('LearningPlanContent', id);
-  }
-
-  public async updateLearningPlanContent(data: Partial<LearningPlanContent>, where: WhereOptions): Promise<[number, LearningPlanContent[]]> {
-    return this.update<LearningPlanContent>('LearningPlanContent', data, where);
-  }
-
-  public async deleteLearningPlanContent(where: WhereOptions): Promise<number> {
-    return this.delete('LearningPlanContent', where);
-  }
-
   // PomodoroSession model methods
   public async createPomodoroSession(data: Partial<PomodoroSession>): Promise<PomodoroSession | null> {
     return this.create<PomodoroSession>('PomodoroSession', data);
