@@ -128,7 +128,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <SidebarInset>
           <AppHeader />
           
-          <div className="p-6">
+          <div className="p-6 flex-1 flex flex-col h-[calc(100vh-64px)]">
             {children}
           </div>
         </SidebarInset>

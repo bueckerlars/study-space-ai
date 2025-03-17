@@ -10,6 +10,7 @@ import { AuthProvider } from './provider/AuthProvider.tsx'
 import { Dashboard } from './pages/Dashboard.tsx'
 import AppLayout from './components/AppLayout.tsx'
 import { ProjectsPage } from './pages/ProjectsPage.tsx'
+import ProjectPage from './pages/ProjectPage.tsx'
 import { ThemeProvider } from './provider/ThemeProvider.tsx'
 
 const router = createBrowserRouter([
@@ -54,6 +55,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
               <ProjectsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'projects/:projectId',
+        element: (
+          <ProtectedRoute>
+              <ProjectPage />
           </ProtectedRoute>
         ),
       },

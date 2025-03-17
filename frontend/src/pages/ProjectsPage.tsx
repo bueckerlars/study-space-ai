@@ -1,7 +1,12 @@
+import AddProjectButton from "@/components/AddProjectButton";
+
+import ProjectGalery from "@/components/ProjectGalery";
+
 export const ProjectsPage = () => {
     return (
         <div>
-            <h1>Projects</h1>
+            <AddProjectButton />
+            <ProjectGalery />
         </div>
     );
     };
