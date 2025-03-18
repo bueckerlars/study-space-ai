@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { Card, CardDescription, CardFooter, CardTitle } from "./ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { getProjectByIdRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
 import { Project } from "@/types";
+import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import { DeleteIcon, EditIcon, MoreVertical, TrashIcon } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 interface ProjectGaleryCardProps {
     projectId: number;
@@ -10,6 +14,7 @@ interface ProjectGaleryCardProps {
 
 const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     const { authToken } = useAuth();
+    const navigate = useNavigate();
     const [project, setProject] = useState<Project | null>(null);
 
     const formatDate = (date: Date) => {
@@ -17,7 +22,6 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     }
 
     useEffect(() => {
-
         getProjectByIdRequest(authToken!, projectId)
             .then((response) => {
                 const project: Project = response.data;
@@ -31,9 +35,36 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
 
     }, []);
 
+    const handleClickOnCard = () => {
+        navigate(`/projects/${projectId}`);
+    }
+
+    const handleButtonClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // This prevents the click from bubbling up to the parent Card
+        // Add any button click logic here
+        console.log("Button clicked");
+    }
+
     return (
-        <Card className="px-4 flex flex-col" >    
-            <CardTitle>{project?.name}</CardTitle>
+        <Card className="px-4 flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
+            <CardHeader className="flex flex-row justify-between items-center">
+                <CardTitle>{project?.name}</CardTitle>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button onClick={handleButtonClick} variant="ghost">
+                            <MoreVertical size={24} />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                        <DropdownMenuItem>
+                            <EditIcon/> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem variant="destructive">
+                            <TrashIcon/> Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </CardHeader>
             <CardDescription className="h-full">{project?.description}</CardDescription>
             <CardFooter className="">Created at: {formatDate(project?.created_at!)}</CardFooter>
         </Card> 

@@ -5,8 +5,8 @@ import ProjectGalery from "@/components/ProjectGalery";
 export const ProjectsPage = () => {
     return (
         <div>
-            <AddProjectButton />
-            <ProjectGalery />
+            <AddProjectButton/>
+            <ProjectGalery/>
         </div>
     );
     };
