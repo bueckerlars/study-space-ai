@@ -1,39 +1,11 @@
-import AddSourcesDialog from '@/components/AddSourcesDialog';
-import SourcesDataTable from '@/components/SourceDataTable/SourcesDataTable';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  CollapsableCard, 
-  CollapsableCardContent, 
-  CollapsableCardHeader, 
-  CollapsableCardSeparator, 
-  CollapsableCardTitle, 
-  CollapsableCardTrigger,
-  useCollapsableCard
-} from '@/components/ui/collapsable-card';
-import { Separator } from '@/components/ui/separator';
+import ChatCard from '@/components/ChatCard';
+import SourcesCollapsableCard from '@/components/SourcesCollapsableCard';
+import StudioCollapsableCard from '@/components/StudioCollapsableCard';
 import { useAuth } from '@/provider/AuthProvider';
 import { getProjectByIdRequest } from '@/services/ApiService';
 import { Project } from '@/types';
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-
-// Header component that only renders when card is expanded
-const ConditionalHeader: React.FC<{title: string}> = ({ title }) => {
-  const { isCollapsed } = useCollapsableCard();
-  
-  if (isCollapsed) {
-    return null;
-  }
-  
-  return (
-    <>
-      <CollapsableCardHeader>
-        <CollapsableCardTitle>{title}</CollapsableCardTitle>
-      </CollapsableCardHeader>
-      <CollapsableCardSeparator />
-    </>
-  );
-};
 
 const ProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -77,31 +49,9 @@ const ProjectPage: React.FC = () => {
 
   return (
     <div className='flex flex-row gap-4 w-full h-full'>
-      <CollapsableCard id="sources" defaultCollapsed={false} fullHeight maxWidth={400} className='flex-1'>
-        <CollapsableCardTrigger />
-        <ConditionalHeader title="Sources" />
-        <CollapsableCardContent>
-          <div className="w-full flex justify-center ">
-            <AddSourcesDialog projectName={project.name} />
-          </div>
-          <SourcesDataTable projectId={projectId!} />
-        </CollapsableCardContent>
-      </CollapsableCard>
-      <Card className='flex-col w-full h-full min-h-0 flex-2'>
-        <CardHeader className="justify-between flex-row items-center">
-          <CardTitle>Chat</CardTitle>
-        </CardHeader>
-        <Separator />
-        <div className="flex-grow overflow-auto">
-        </div>
-      </Card>
-      <CollapsableCard id="studio" defaultCollapsed={false} fullHeight maxWidth={400} className="flex-1">
-        <CollapsableCardTrigger />
-        <ConditionalHeader title="Studio" />
-        <CollapsableCardContent>
-          
-        </CollapsableCardContent>
-      </CollapsableCard>
+      <SourcesCollapsableCard project={project} />
+      <ChatCard project={project} />
+      <StudioCollapsableCard project={project} />
     </div>
   );
 };

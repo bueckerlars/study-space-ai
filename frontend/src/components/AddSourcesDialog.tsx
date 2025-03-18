@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { PlusIcon, UploadIcon, XIcon } from "lucide-react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 import { Progress } from "./ui/progress";
@@ -13,6 +13,8 @@ interface AddSourcesDialogProps {
 const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
     const [files, setFiles] = useState<File[]>([]);
     const [open, setOpen] = useState(false);
+    const [showButtonText, setShowButtonText] = useState(true);
+    const buttonRef = useRef<HTMLButtonElement>(null);
     const MAX_FILES = 10;
 
     // Check if dialog should be opened automatically
@@ -21,6 +23,26 @@ const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
             setOpen(true);
         }
     }, [projectName]);
+
+    // Check button width on mount and resize
+    useEffect(() => {
+        const checkButtonWidth = () => {
+            if (buttonRef.current) {
+                setShowButtonText(buttonRef.current.offsetWidth >= 200);
+            }
+        };
+
+        // Initial check
+        checkButtonWidth();
+
+        // Set up resize observer
+        const resizeObserver = new ResizeObserver(checkButtonWidth);
+        if (buttonRef.current) {
+            resizeObserver.observe(buttonRef.current);
+        }
+
+        return () => resizeObserver.disconnect();
+    }, []);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         // Filter for supported file types
@@ -64,7 +86,10 @@ const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline"><PlusIcon /> Add Sources</Button>
+                <Button ref={buttonRef} variant="outline" className="w-full">
+                    <PlusIcon className="h-4 w-4" /> 
+                    {showButtonText && <span className="ml-2">Add Sources</span>}
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[1000px]">
                 <DialogHeader>

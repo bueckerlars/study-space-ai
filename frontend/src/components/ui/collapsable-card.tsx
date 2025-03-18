@@ -207,7 +207,7 @@ export function CollapsableCardTrigger({
         !isCollapsed && collapseDirection === "left" && "right-2 pl-2 top-4",
         !isCollapsed && collapseDirection === "right" && "left-2 pr-2 top-4",
         // Center horizontally when collapsed
-        isCollapsed && "top-[10px]",
+        isCollapsed && "top-[14px] left-1/2 transform -translate-x-1/2",
         className
       )}
       onClick={toggleCollapsed}
@@ -248,7 +248,8 @@ export function CollapsableCardSeparator({
     <Separator
       className={cn(
         "my-1",
-        isCollapsed && "opacity-0 h-0 my-0",
+        // Add top margin when collapsed to prevent overlap with the trigger button
+        isCollapsed && "mt-12", // Add sufficient margin to clear the trigger button
         className
       )}
       {...props}
@@ -267,7 +268,7 @@ export function CollapsableCardHeader({
     <CardHeader
       className={cn(
         className,
-        isCollapsed && "mt-10 px-2 py-2"
+        isCollapsed && "mt-4 px-2 py-2"
       )}
       {...props}
     />
