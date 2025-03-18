@@ -1,9 +1,9 @@
 import { Project } from "@/types";
 import { PlusIcon, NotebookIcon } from "lucide-react";
-import ConditionalHeader from "./ConditionalHeader";
-import { Button } from "./ui/button";
-import { CollapsableCard, CollapsableCardTrigger, CollapsableCardSeparator, CollapsableCardContent } from "./ui/collapsable-card";
 import { useEffect, useRef, useState } from "react";
+import ConditionalHeader from "../ConditionalHeader";
+import { Button } from "../ui/button";
+import { CollapsableCard, CollapsableCardTrigger, CollapsableCardSeparator, CollapsableCardContent } from "../ui/collapsable-card";
 
 //@ts-ignore
 const StudioCollapsableCard: React.FC<{ project: Project }> = ({ project }) => {

@@ -1,8 +1,8 @@
 import { Project } from "@/types";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Separator } from "./ui/separator";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Separator } from "../ui/separator";
 import { PlusIcon } from "lucide-react";
 
 //@ts-ignore

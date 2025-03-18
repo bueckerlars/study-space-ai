@@ -1,8 +1,8 @@
 import { Project } from "@/types";
-import AddSourcesDialog from "./AddSourcesDialog";
-import SourcesDataTable from "./SourceDataTable/SourcesDataTable";
-import { CollapsableCard, CollapsableCardTrigger, CollapsableCardSeparator, CollapsableCardContent } from "./ui/collapsable-card";
-import ConditionalHeader from "./ConditionalHeader";
+import AddSourcesDialog from "../AddSourcesDialog";
+import SourcesDataTable from "../SourceDataTable/SourcesDataTable";
+import { CollapsableCard, CollapsableCardTrigger, CollapsableCardSeparator, CollapsableCardContent } from "../ui/collapsable-card";
+import ConditionalHeader from "../ConditionalHeader";
 import { useState } from "react";
 
 const SourcesCollapsableCard: React.FC<{ project: Project }> = ({ project }) => {

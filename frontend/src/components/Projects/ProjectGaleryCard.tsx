@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
-import { getProjectByIdRequest } from "@/services/ApiService";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { deleteProjectRequest, getProjectByIdRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
 import { Project } from "@/types";
 import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
-import { DeleteIcon, EditIcon, MoreVertical, TrashIcon } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { EditIcon, MoreVertical, TrashIcon } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface ProjectGaleryCardProps {
     projectId: number;
@@ -45,6 +45,20 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
         console.log("Button clicked");
     }
 
+    const handleDeleteProject = () => {
+        // Add delete project logic here
+        console.log("Delete project");
+        deleteProjectRequest(authToken!, projectId)
+            .then((response) => {
+                console.log(response);
+                navigate("/projects");
+            }
+        )
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+
     return (
         <Card className="px-4 flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
             <CardHeader className="flex flex-row justify-between items-center">
@@ -59,7 +73,7 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
                         <DropdownMenuItem>
                             <EditIcon/> Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive">
+                        <DropdownMenuItem variant="destructive" onClick={handleDeleteProject}>
                             <TrashIcon/> Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>

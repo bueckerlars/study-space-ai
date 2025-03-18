@@ -1,12 +1,11 @@
-import AddProjectButton from "@/components/AddProjectButton";
-
-import ProjectGalery from "@/components/ProjectGalery";
+import AddProjectButton from "@/components/Projects/AddProjectButton";
+import ProjectGalery from "@/components/Projects/ProjectGalery";
 
 export const ProjectsPage = () => {
     return (
-        <div>
+        <div className="px-12">
             <AddProjectButton/>
             <ProjectGalery/>
         </div>
     );
-    };
+};

@@ -1,5 +1,5 @@
 import { PlusIcon } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { createProjectRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
 import { Project } from "@/types";

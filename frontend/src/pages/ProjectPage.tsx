@@ -1,6 +1,6 @@
-import ChatCard from '@/components/ChatCard';
-import SourcesCollapsableCard from '@/components/SourcesCollapsableCard';
-import StudioCollapsableCard from '@/components/StudioCollapsableCard';
+import ChatCard from '@/components/Projects/ChatCard';
+import SourcesCollapsableCard from '@/components/Projects/SourcesCollapsableCard';
+import StudioCollapsableCard from '@/components/Projects/StudioCollapsableCard';
 import { useAuth } from '@/provider/AuthProvider';
 import { getProjectByIdRequest } from '@/services/ApiService';
 import { Project } from '@/types';
