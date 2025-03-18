@@ -50,7 +50,7 @@ const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogP
     }, [open]);
 
     useEffect(() => {
-        setCombinedFileCount(files.length + filesInProject.length);
+        setCombinedFileCount(files?.length + filesInProject?.length);
     }, [filesInProject, files]);
 
     // Check button width on mount and resize
@@ -113,7 +113,6 @@ const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogP
     const progressPercentage = (combinedFileCount / MAX_FILES) * 100;
 
     const handleOnSubmit = () => {
-        console.log("handleSubmit", files);
         files.map(file => {
             console.log(file);
             uploadFileRequest(authToken!, file, user!.user_id!, projectId!);
