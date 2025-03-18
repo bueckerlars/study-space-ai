@@ -5,16 +5,24 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 import { Progress } from "./ui/progress";
+import { getFilesByProjectRequest, uploadFileRequest } from "@/services/ApiService";
+import { useAuth } from "@/provider/AuthProvider";
+import { File as FileType } from "@/types";
 
 interface AddSourcesDialogProps {
+    projectId?: number;
     projectName?: string;
+    onClose: () => void;
 }
 
-const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
+const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogProps) => {
+    const { authToken, user } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
+    const [filesInProject, setFilesInProject] = useState<FileType[]>([]);
     const [open, setOpen] = useState(false);
     const [showButtonText, setShowButtonText] = useState(true);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const [combinedFileCount, setCombinedFileCount] = useState(0);
     const MAX_FILES = 10;
 
     // Check if dialog should be opened automatically
@@ -23,6 +31,27 @@ const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
             setOpen(true);
         }
     }, [projectName]);
+
+    useEffect(() => {
+        if (!open) {
+            onClose();
+            return;
+        }
+
+        const fetchFiles = () => {
+            getFilesByProjectRequest(authToken!, projectId!).then((response) => {
+                const data: FileType[] = response.data;
+                setFilesInProject(data);
+            }).catch((error) => {
+                console.error(error);
+            });
+        };
+        fetchFiles();
+    }, [open]);
+
+    useEffect(() => {
+        setCombinedFileCount(files.length + filesInProject.length);
+    }, [filesInProject, files]);
 
     // Check button width on mount and resize
     useEffect(() => {
@@ -77,11 +106,21 @@ const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
             'text/markdown': ['.md'],
             'application/pdf': ['.pdf'],
         },
-        disabled: files.length >= MAX_FILES
+        disabled: combinedFileCount >= MAX_FILES
     });
 
     // Calculate progress percentage
-    const progressPercentage = (files.length / MAX_FILES) * 100;
+    const progressPercentage = (combinedFileCount / MAX_FILES) * 100;
+
+    const handleOnSubmit = () => {
+        console.log("handleSubmit", files);
+        files.map(file => {
+            console.log(file);
+            uploadFileRequest(authToken!, file, user!.user_id!, projectId!);
+        });
+        setFiles([]);
+        setOpen(false);
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -140,8 +179,8 @@ const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
                         
                         <div className="mt-4 space-y-2 mt-12">
                             <div className="flex justify-between text-sm">
-                                <span>File limit: {files.length} of {MAX_FILES}</span>
-                                <span>{files.length === MAX_FILES ? 'Maximum reached' : `${MAX_FILES - files.length} slots remaining`}</span>
+                                <span>File limit: {combinedFileCount} of {MAX_FILES}</span>
+                                <span>{combinedFileCount === MAX_FILES ? 'Maximum reached' : `${MAX_FILES - combinedFileCount} slots remaining`}</span>
                             </div>
                             <Progress value={progressPercentage} className="h-2" />
                         </div>
@@ -149,7 +188,7 @@ const AddSourcesDialog = ({ projectName }: AddSourcesDialogProps) => {
 
                 </div>
                 <DialogFooter>
-                    <Button type="submit" disabled={files.length === 0}>
+                    <Button type="submit" disabled={files.length === 0} onClick={handleOnSubmit}>
                         Upload and Process
                     </Button>
                 </DialogFooter>
