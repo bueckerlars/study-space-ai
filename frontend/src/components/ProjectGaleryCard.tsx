@@ -12,6 +12,10 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     const { authToken } = useAuth();
     const [project, setProject] = useState<Project | null>(null);
 
+    const formatDate = (date: Date) => {
+        return new Date(date).toLocaleDateString();
+    }
+
     useEffect(() => {
 
         getProjectByIdRequest(authToken!, projectId)
@@ -28,10 +32,10 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     }, []);
 
     return (
-        <Card>    
+        <Card className="px-4 flex flex-col" >    
             <CardTitle>{project?.name}</CardTitle>
-            <CardDescription>{project?.description}</CardDescription>
-            <CardFooter>Created at: {project?.created_at?.toLocaleDateString()}</ CardFooter>
+            <CardDescription className="h-full">{project?.description}</CardDescription>
+            <CardFooter className="">Created at: {formatDate(project?.created_at!)}</CardFooter>
         </Card> 
     );
 }

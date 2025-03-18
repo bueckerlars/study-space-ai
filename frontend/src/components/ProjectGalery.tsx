@@ -22,9 +22,9 @@ const ProjectGalery = () => {
     }, []);
 
     return (
-        <>
+        <div className="grid grid-cols-4 gap-4 h-full flex-1">
             {projects.map((project) => (<ProjectGaleryCard key={project.project_id} projectId={project.project_id!} />))}
-        </>
+        </div>
     );
 }
 

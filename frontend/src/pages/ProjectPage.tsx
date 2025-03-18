@@ -1,15 +1,39 @@
 import AddSourcesDialog from '@/components/AddSourcesDialog';
 import SourcesDataTable from '@/components/SourceDataTable/SourcesDataTable';
-import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  CollapsableCard, 
+  CollapsableCardContent, 
+  CollapsableCardHeader, 
+  CollapsableCardSeparator, 
+  CollapsableCardTitle, 
+  CollapsableCardTrigger,
+  useCollapsableCard
+} from '@/components/ui/collapsable-card';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/provider/AuthProvider';
 import { getProjectByIdRequest } from '@/services/ApiService';
 import { Project } from '@/types';
-import { SidebarIcon } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+// Header component that only renders when card is expanded
+const ConditionalHeader: React.FC<{title: string}> = ({ title }) => {
+  const { isCollapsed } = useCollapsableCard();
+  
+  if (isCollapsed) {
+    return null;
+  }
+  
+  return (
+    <>
+      <CollapsableCardHeader>
+        <CollapsableCardTitle>{title}</CollapsableCardTitle>
+      </CollapsableCardHeader>
+      <CollapsableCardSeparator />
+    </>
+  );
+};
 
 const ProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -52,45 +76,32 @@ const ProjectPage: React.FC = () => {
   }
 
   return (
-    <div className='grid grid-cols-4 gap-4 h-full flex-1'>
-      <div className='col-span-1 flex flex-col h-full'>
-        <Card className='flex-grow flex flex-col px-4 w-full h-full min-h-0'>
-          <CardHeader className='flex justify-between flex-row items-center'>
-            <CardTitle >
-              Sources
-            </CardTitle>
-          </CardHeader>
-          <Separator />
-          <div className="flex-grow overflow-auto">
-            <div className="w-full flex justify-center ">
-              <AddSourcesDialog projectName={project.name} />
-            </div>
-            <SourcesDataTable projectId={projectId!} />
+    <div className='flex flex-row gap-4 w-full h-full'>
+      <CollapsableCard id="sources" defaultCollapsed={false} fullHeight maxWidth={400} className='flex-1'>
+        <CollapsableCardTrigger />
+        <ConditionalHeader title="Sources" />
+        <CollapsableCardContent>
+          <div className="w-full flex justify-center ">
+            <AddSourcesDialog projectName={project.name} />
           </div>
-        </Card>
-      </div>
-      <div className='col-span-2 flex flex-col h-full'>
-        <Card className='flex-grow flex flex-col w-full h-full min-h-0'>
-          <CardHeader className="justify-between flex-row items-center flex">
-            <CardTitle>Chat</CardTitle>
-          </CardHeader>
-          <Separator />
-          <div className="flex-grow overflow-auto">
-          </div>
-        </Card>
-      </div>
-      <div className='col-span-1 flex flex-col h-full'>
-        <Card className='flex-grow flex flex-col w-full h-full min-h-0'>
-          <CardHeader className="justify-between flex-row items-center flex">
-            <CardTitle>
-              Studio
-            </CardTitle>
-          </CardHeader>
-          <Separator />
-          <div className="flex-grow overflow-auto">
-          </div>
-        </Card>
-      </div>
+          <SourcesDataTable projectId={projectId!} />
+        </CollapsableCardContent>
+      </CollapsableCard>
+      <Card className='flex-col w-full h-full min-h-0 flex-2'>
+        <CardHeader className="justify-between flex-row items-center">
+          <CardTitle>Chat</CardTitle>
+        </CardHeader>
+        <Separator />
+        <div className="flex-grow overflow-auto">
+        </div>
+      </Card>
+      <CollapsableCard id="studio" defaultCollapsed={false} fullHeight maxWidth={400} className="flex-1">
+        <CollapsableCardTrigger />
+        <ConditionalHeader title="Studio" />
+        <CollapsableCardContent>
+          
+        </CollapsableCardContent>
+      </CollapsableCard>
     </div>
   );
 };
