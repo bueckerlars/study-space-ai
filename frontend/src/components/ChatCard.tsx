@@ -1,10 +1,9 @@
 import { Project } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
-import { Label } from "@radix-ui/react-label";
-import { Separator } from "@radix-ui/react-separator";
-import { PlusIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Separator } from "./ui/separator";
+import { PlusIcon } from "lucide-react";
 
 //@ts-ignore
 const ChatCard: React.FC<{project: Project}> = ({ project }) => {
@@ -17,8 +16,7 @@ const ChatCard: React.FC<{project: Project}> = ({ project }) => {
             <Separator />
             <CardContent className="flex-1">
             <div className="flex flex-col gap-2 h-full justify-center items-center text-gray-400">
-                <Label>Add Sources to begin a Chat</Label>
-                <Button variant={"secondary"}><PlusIcon/>Add Souces</Button>
+                <p className="text-gray-400 text-xl">Add Sources to begin a Chat</p>
             </div>
             </CardContent>
             <CardFooter>
