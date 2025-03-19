@@ -63,7 +63,7 @@ const SourcesDataTable = forwardRef<SourcesDataTableRef, SourcesDataTableProps>(
             {data.length > 0 && (
                 <div className="flex flex-col gap-4 mt-4">
                     <Label>Sources</Label>
-                    <DataTable columns={columns} data={data} showHeader={true} showBorders={false}/>
+                    <DataTable columns={columns} data={data} showHeader={false} showBorders={false}/>
                 </div>
             ) || (
                 <div className="flex justify-center items-center h-40 flex-col gap-2 text-gray-400 h-full">
