@@ -43,7 +43,7 @@ const StudioCollapsableCard: React.FC<{ project: Project }> = ({ project }) => {
             <CollapsableCardContent>
             <Button ref={buttonRef} variant="outline" className="w-full">
                     <PlusIcon className="h-4 w-4" /> 
-                    {showButtonText && <span className="ml-2">Add Sources</span>}
+                    {showButtonText && <span className="ml-2">Add Note</span>}
                 </Button>
                 {!isCollapsed && (
                     <div className="flex justify-center items-center h-40 flex-col gap-2 text-gray-400 h-full">

@@ -5,6 +5,7 @@ import { File as FileType } from "@/types";
 import { getFilesByProjectRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
 import { FileIcon } from "lucide-react";
+import { Label } from "../ui/label";
 
 interface SourcesDataTableProps {
     projectId: string;
@@ -60,7 +61,10 @@ const SourcesDataTable = forwardRef<SourcesDataTableRef, SourcesDataTableProps>(
     return(
         <>
             {data.length > 0 && (
-                <DataTable columns={columns} data={data} showHeader={false}/>
+                <div className="flex flex-col gap-4 mt-4">
+                    <Label>Sources</Label>
+                    <DataTable columns={columns} data={data} showHeader={true} showBorders={false}/>
+                </div>
             ) || (
                 <div className="flex justify-center items-center h-40 flex-col gap-2 text-gray-400 h-full">
                     <FileIcon size={40}/>
