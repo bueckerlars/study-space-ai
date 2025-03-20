@@ -7,25 +7,16 @@ entity "Users" {
   --
   + email : VARCHAR(255) [UNIQUE, NOT NULL]
   + password : VARCHAR(255) [NOT NULL]
-  + created_at : TIMESTAMP
-  + updated_at : TIMESTAMP
-}
-
-entity "Modules" {
-  + module_id : INTEGER [PK, AI]
-  --
-  + user_id : INTEGER [FK, NOT NULL]
-  + name : VARCHAR(255) [NOT NULL]
-  + description : TEXT
+  + username : VARCHAR(255) [NOT NULL]
+  + role : VARCHAR(50) [NOT NULL, DEFAULT: 'user']
   + created_at : TIMESTAMP
   + updated_at : TIMESTAMP
 }
 
 entity "Projects" {
-  + project_id : INTEGER [PK, AI]
+  + project_id : UUID [PK, UUIDV4]
   --
   + user_id : INTEGER [FK, NOT NULL]
-  + module_id : INTEGER [FK]
   + name : VARCHAR(255) [NOT NULL]
   + description : TEXT
   + created_at : TIMESTAMP
@@ -36,8 +27,7 @@ entity "Deadlines" {
   + deadline_id : INTEGER [PK, AI]
   --
   + user_id : INTEGER [FK, NOT NULL]
-  + module_id : INTEGER [FK]
-  + project_id : INTEGER [FK]
+  + project_id : UUID [FK]
   + title : VARCHAR(255) [NOT NULL]
   + description : TEXT
   + due_date : TIMESTAMP [NOT NULL]
@@ -49,33 +39,11 @@ entity "Tasks" {
   + task_id : INTEGER [PK, AI]
   --
   + user_id : INTEGER [FK, NOT NULL]
-  + module_id : INTEGER [FK]
-  + project_id : INTEGER [FK]
+  + project_id : UUID [FK]
   + deadline_id : INTEGER [FK]
   + title : VARCHAR(255) [NOT NULL]
   + description : TEXT
   + is_completed : BOOLEAN [DEFAULT: false]
-  + created_at : TIMESTAMP
-  + updated_at : TIMESTAMP
-}
-
-entity "LearningPlans" {
-  + learning_plan_id : INTEGER [PK, AI]
-  --
-  + user_id : INTEGER [FK, NOT NULL]
-  + name : VARCHAR(255) [NOT NULL]
-  + description : TEXT
-  + created_at : TIMESTAMP
-  + updated_at : TIMESTAMP
-}
-
-entity "LearningPlanContent" {
-  + content_id : INTEGER [PK, AI]
-  --
-  + learning_plan_id : INTEGER [FK, NOT NULL]
-  + title : VARCHAR(255) [NOT NULL]
-  + url : TEXT
-  + order : INTEGER
   + created_at : TIMESTAMP
   + updated_at : TIMESTAMP
 }
@@ -92,21 +60,49 @@ entity "PomodoroSessions" {
   + updated_at : TIMESTAMP
 }
 
-' Beziehungen
-Users ||--o{ Modules : manages
+entity "Files" {
+  + file_id : UUID [PK, UUIDV4]
+  --
+  + user_id : INTEGER [FK, NOT NULL]
+  + project_id : UUID [FK]
+  + name : VARCHAR(255) [NOT NULL]
+  + size : INTEGER [NOT NULL]
+  + type : VARCHAR(100) [NOT NULL]
+  + url : TEXT [NOT NULL]
+  + created_at : TIMESTAMP
+  + updated_at : TIMESTAMP
+}
+
+entity "Sources" {
+  + id : UUID [PK, UUIDV4]
+  --
+  + project_id : UUID [FK, NOT NULL]
+  + status : VARCHAR(50) [NOT NULL]
+  + source_file_id : UUID [FK]
+  + text_file_id : UUID [FK]
+  + summary_file_id : UUID [FK]
+  + created_at : TIMESTAMP
+  + updated_at : TIMESTAMP
+}
+
+' Relationships
 Users ||--o{ Projects : creates
 Users ||--o{ Deadlines : creates
 Users ||--o{ Tasks : creates
-Users ||--o{ LearningPlans : creates
 Users ||--o{ PomodoroSessions : tracks
-Modules ||--o{ Projects : contains
-Modules ||--o{ Deadlines : has
-Modules ||--o{ Tasks : has
+Users ||--o{ Files : uploads
+
 Projects ||--o{ Deadlines : has
 Projects ||--o{ Tasks : has
+Projects ||--o{ Files : contains
+Projects ||--o{ Sources : has
+
 Deadlines ||--o{ Tasks : has
-LearningPlans ||--o{ LearningPlanContent : has
-LearningPlans ||--o{ Tasks : has
-Tasks ||--o{ PomodoroSessions : tracked by
+
+Tasks ||--o{ PomodoroSessions : tracked_by
+
+Files ||--o| Sources : source_file
+Files ||--o| Sources : text_file
+Files ||--o| Sources : summary_file
 
 @enduml
