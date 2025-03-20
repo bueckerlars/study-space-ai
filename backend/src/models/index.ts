@@ -6,6 +6,7 @@ import initDeadlineModel from './Deadline';
 import initTaskModel from './Task';
 import initPomodoroSessionModel from './PomodoroSession';
 import initFileModel from './File';
+import initSourceModel from './Source';
 import logger from '../services/logger';
 
 // Function to initialize all models
@@ -17,6 +18,7 @@ export const initModels = (sequelize: Sequelize) => {
   const Task = initTaskModel(sequelize);
   const PomodoroSession = initPomodoroSessionModel(sequelize);
   const File = initFileModel(sequelize);
+  const Source = initSourceModel(sequelize);
 
   // Set up associations
   if (typeof User.associate === 'function') User.associate({ Project, Deadline, Task, PomodoroSession, File });
@@ -25,6 +27,7 @@ export const initModels = (sequelize: Sequelize) => {
   if (typeof Task.associate === 'function') Task.associate({ User, Project, Deadline, PomodoroSession });
   if (typeof PomodoroSession.associate === 'function') PomodoroSession.associate({ User, Task });
   if (typeof File.associate === 'function') File.associate({ User, Project });
+  if (typeof Source.associate === 'function') Source.associate({ File });
 
   logger.info('Models initialized');
   return {
@@ -33,7 +36,8 @@ export const initModels = (sequelize: Sequelize) => {
     Deadline,
     Task,
     PomodoroSession,
-    File
+    File,
+    Source
   };
 };
 
@@ -44,7 +48,8 @@ export {
   initDeadlineModel,
   initTaskModel,
   initPomodoroSessionModel,
-  initFileModel
+  initFileModel,
+  initSourceModel
 };
 
 // Default export
