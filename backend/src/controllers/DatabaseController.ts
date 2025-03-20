@@ -10,6 +10,7 @@ import {
   PomodoroSession
 } from '../types';
 import { File } from '../types/File';
+import { Source } from '../types/Source';
 
 // Initialize models
 const models = initModels(databaseService.getSequelize());
@@ -297,6 +298,31 @@ export class DatabaseController {
 
   public async deleteFile(where: WhereOptions): Promise<number> {
     return this.delete('File', where);
+  }
+
+  // Source model methods
+  public async createSource(data: Partial<Source>): Promise<Source | null> {
+    return this.create<Source>('Source', data);
+  }
+
+  public async findAllSources(options: FindOptions = {}): Promise<Source[]> {
+    return this.findAll<Source>('Source', options);
+  }
+
+  public async findSourceById(id: string): Promise<Source | null> {
+    return this.findById<Source>('Source', id);
+  }
+
+  public async findSourcesByStatus(status: string): Promise<Source[]> {
+    return this.findAll<Source>('Source', { where: { status } });
+  }
+
+  public async updateSource(data: Partial<Source>, where: WhereOptions): Promise<[number, Source[]]> {
+    return this.update<Source>('Source', data, where);
+  }
+
+  public async deleteSource(where: WhereOptions): Promise<number> {
+    return this.delete('Source', where);
   }
 }
 
