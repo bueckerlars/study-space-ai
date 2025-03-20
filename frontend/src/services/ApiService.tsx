@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Source } from '../types/Source';
 
 // Base API URLs
 const API_BASE_URL = 'http://localhost:5066';
@@ -25,6 +26,15 @@ const projectApi = axios.create({
 // File API instance
 const fileApi = axios.create({
   baseURL: `${API_BASE_URL}/api/files`,
+  withCredentials: true,
+});
+
+// Source API instance
+const sourceApi = axios.create({
+  baseURL: `${API_BASE_URL}/api/sources`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
   withCredentials: true,
 });
 
@@ -136,6 +146,49 @@ export const downloadFileRequest = (authToken: string, fileId: string) => {
 
 export const deleteFileRequest = (authToken: string, fileId: string) => {
   return fileApi.delete(`/${fileId}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+// Source API functions
+export const createSourceRequest = (authToken: string, sourceData: Partial<Source>) => {
+  return sourceApi.post('/', sourceData, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+export const getAllSourcesRequest = (authToken: string) => {
+  return sourceApi.get('/', {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+export const getSourceByIdRequest = (authToken: string, sourceId: string) => {
+  return sourceApi.get(`/${sourceId}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+export const getSourcesByStatusRequest = (authToken: string, status: string) => {
+  return sourceApi.get(`/status/${status}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+export const updateSourceRequest = (authToken: string, sourceId: string, sourceData: Partial<Source>) => {
+  return sourceApi.put(`/${sourceId}`, sourceData, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+export const updateSourceStatusRequest = (authToken: string, sourceId: string, status: string) => {
+  return sourceApi.patch(`/${sourceId}/status`, { status }, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+export const deleteSourceRequest = (authToken: string, sourceId: string) => {
+  return sourceApi.delete(`/${sourceId}`, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
