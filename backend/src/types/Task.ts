@@ -1,7 +1,7 @@
 export interface Task {
   task_id?: number;
   user_id: number;
-  project_id?: number;
+  project_id?: string;
   deadline_id?: number;
   title: string;
   description?: string;

@@ -6,6 +6,7 @@ interface SourceCreationAttributes extends Optional<SourceType, 'id'> {}
 class Source extends Model<SourceType, SourceCreationAttributes> implements SourceType {
   public id!: string;
   public status!: string;
+  public project_id!: string;
   public source_file_id?: string;
   public text_file_id?: string;
   public summary_file_id?: string;
@@ -14,9 +15,23 @@ class Source extends Model<SourceType, SourceCreationAttributes> implements Sour
 
   // Associations
   static associate(models: any) {
-    Source.belongsTo(models.File, { foreignKey: 'source_file_id', as: 'sourceFile' });
-    Source.belongsTo(models.File, { foreignKey: 'text_file_id', as: 'textFile' });
-    Source.belongsTo(models.File, { foreignKey: 'summary_file_id', as: 'summaryFile' });
+    // Associate with Project
+    Source.belongsTo(models.Project, {
+      foreignKey: 'project_id',
+    });
+    
+    // Associate with Files for different purposes
+    Source.belongsTo(models.File, {
+      foreignKey: 'source_file_id',
+    });
+    
+    Source.belongsTo(models.File, {
+      foreignKey: 'text_file_id',
+    });
+    
+    Source.belongsTo(models.File, {
+      foreignKey: 'summary_file_id',
+    });
   }
 }
 
@@ -27,6 +42,14 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
+      },
+      project_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+          model: 'Projects',
+          key: 'project_id',
+        },
       },
       status: {
         type: DataTypes.STRING(50),

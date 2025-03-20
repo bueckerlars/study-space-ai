@@ -29,7 +29,7 @@ const SourcesDataTable = forwardRef<SourcesDataTableRef, SourcesDataTableProps>(
     });
 
     const fetchFiles = () => {
-        getFilesByProjectRequest(authToken!, parseInt(projectId)).then((response) => {
+        getFilesByProjectRequest(authToken!, projectId).then((response) => {
             const data: FileType[] = response.data;
             setData(data);
         }).catch((error) => {

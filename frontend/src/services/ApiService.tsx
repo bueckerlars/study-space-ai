@@ -64,36 +64,36 @@ export const getUserProjectsRequest = (authToken: string) => {
   });
 };
 
-export const getProjectByIdRequest = (authToken: string, projectId: number) => {
+export const getProjectByIdRequest = (authToken: string, projectId: string) => {
   return projectApi.get(`/${projectId}`, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
 
-export const updateProjectRequest = (authToken: string, projectId: number, data: { name?: string, description?: string }) => {
+export const updateProjectRequest = (authToken: string, projectId: string, data: { name?: string, description?: string }) => {
   return projectApi.put(`/${projectId}`, data, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
 
-export const deleteProjectRequest = (authToken: string, projectId: number) => {
+export const deleteProjectRequest = (authToken: string, projectId: string) => {
   return projectApi.delete(`/${projectId}`, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
 
-export const getProjectFilesRequest = (authToken: string, projectId: number) => {
+export const getProjectFilesRequest = (authToken: string, projectId: string) => {
   return projectApi.get(`/${projectId}/files`, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
 
 // File API functions
-export const uploadFileRequest = (authToken: string, file: File, userId: number, projectId: number) => {
+export const uploadFileRequest = (authToken: string, file: File, userId: number, projectId: string) => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('user_id', userId.toString());
-  formData.append('project_id', projectId.toString());
+  formData.append('project_id', projectId);
   
   return fileApi.post('/upload', formData, {
     headers: { 
@@ -103,7 +103,7 @@ export const uploadFileRequest = (authToken: string, file: File, userId: number,
   });
 };
 
-export const getFilesByProjectRequest = (authToken: string, projectId: number) => {
+export const getFilesByProjectRequest = (authToken: string, projectId: string) => {
   return fileApi.get(`/project/${projectId}`, {
     headers: { Authorization: `Bearer ${authToken}` },
   });

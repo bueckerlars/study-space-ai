@@ -4,7 +4,6 @@ import fileService from '../services/FileService';
 import logger from '../services/logger';
 import { File } from '../types/File';
 import fs from 'fs';
-import path from 'path';
 
 export class FileController {
   async uploadFile(req: Request, res: Response): Promise<void> {
@@ -27,7 +26,7 @@ export class FileController {
       const fileData: Partial<File> = {
         file_id: uuidv4(),
         user_id: parseInt(user_id),
-        project_id: parseInt(project_id),
+        project_id: project_id,
         name: file.originalname,
         size: file.size,
         type: file.mimetype,
@@ -56,9 +55,9 @@ export class FileController {
 
   async getFilesByProject(req: Request, res: Response): Promise<void> {
     try {
-      const projectId = parseInt(req.params.projectId);
+      const projectId = req.params.projectId;
       
-      if (isNaN(projectId)) {
+      if (!projectId) {
         res.status(400).json({ error: 'Invalid project ID' });
         return;
       }

@@ -27,7 +27,7 @@ export const initModels = (sequelize: Sequelize) => {
   if (typeof Task.associate === 'function') Task.associate({ User, Project, Deadline, PomodoroSession });
   if (typeof PomodoroSession.associate === 'function') PomodoroSession.associate({ User, Task });
   if (typeof File.associate === 'function') File.associate({ User, Project });
-  if (typeof Source.associate === 'function') Source.associate({ File });
+  if (typeof Source.associate === 'function') Source.associate({ File, Project });
 
   logger.info('Models initialized');
   return {

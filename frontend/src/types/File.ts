@@ -1,7 +1,7 @@
 export interface File {
     file_id: string;
     user_id: number;
-    project_id: number;
+    project_id: string;
     name: string;
     size: number;
     type: string;

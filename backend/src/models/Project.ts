@@ -4,7 +4,7 @@ import { Project as ProjectType } from '../types/Project';
 interface ProjectCreationAttributes extends Optional<ProjectType, 'project_id'> {}
 
 class Project extends Model<ProjectType, ProjectCreationAttributes> implements ProjectType {
-  public project_id!: number;
+  public project_id!: string;
   public user_id!: number;
   public name!: string;
   public description?: string;
@@ -23,8 +23,8 @@ export default (sequelize: Sequelize) => {
   Project.init(
     {
       project_id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
       user_id: {

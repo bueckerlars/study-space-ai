@@ -51,8 +51,9 @@ class ProjectController {
    */
   async getProjectById(req: Request, res: Response): Promise<void> {
     try {
-      const projectId = parseInt(req.params.id);
-      if (isNaN(projectId)) {
+      const projectId = req.params.id;
+      
+      if (!projectId) {
         res.status(400).json({ error: 'Invalid project ID' });
         return;
       }
@@ -88,8 +89,9 @@ class ProjectController {
    */
   async updateProject(req: Request, res: Response): Promise<void> {
     try {
-      const projectId = parseInt(req.params.id);
-      if (isNaN(projectId)) {
+      const projectId = req.params.id;
+      
+      if (!projectId) {
         res.status(400).json({ error: 'Invalid project ID' });
         return;
       }
@@ -133,8 +135,9 @@ class ProjectController {
    */
   async deleteProject(req: Request, res: Response): Promise<void> {
     try {
-      const projectId = parseInt(req.params.id);
-      if (isNaN(projectId)) {
+      const projectId = req.params.id;
+      
+      if (!projectId) {
         res.status(400).json({ error: 'Invalid project ID' });
         return;
       }
@@ -171,8 +174,9 @@ class ProjectController {
    */
   async getProjectFiles(req: Request, res: Response): Promise<void> {
     try {
-      const projectId = parseInt(req.params.id);
-      if (isNaN(projectId)) {
+      const projectId = req.params.id;
+      
+      if (!projectId) {
         res.status(400).json({ error: 'Invalid project ID' });
         return;
       }
@@ -200,6 +204,44 @@ class ProjectController {
     } catch (error) {
       logger.error(`Error in getProjectFiles: ${error instanceof Error ? error.message : String(error)}`);
       res.status(500).json({ error: 'Failed to fetch project files' });
+    }
+  }
+
+  /**
+   * Get project sources
+   */
+  async getProjectSources(req: Request, res: Response): Promise<void> {
+    try {
+      const projectId = req.params.id;
+      
+      if (!projectId) {
+        res.status(400).json({ error: 'Invalid project ID' });
+        return;
+      }
+
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+      }
+
+      // Check if the project exists and belongs to the user
+      const existingProject = await projectsService.getProjectById(projectId);
+      if (!existingProject) {
+        res.status(404).json({ error: 'Project not found' });
+        return;
+      }
+
+      if (existingProject.user_id !== userId) {
+        res.status(403).json({ error: 'Access denied' });
+        return;
+      }
+
+      const sources = await projectsService.getProjectSources(projectId);
+      res.status(200).json(sources);
+    } catch (error) {
+      logger.error(`Error in getProjectSources: ${error instanceof Error ? error.message : String(error)}`);
+      res.status(500).json({ error: 'Failed to fetch project sources' });
     }
   }
 }

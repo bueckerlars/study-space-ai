@@ -6,7 +6,7 @@ interface TaskCreationAttributes extends Optional<TaskType, 'task_id'> {}
 class Task extends Model<TaskType, TaskCreationAttributes> implements TaskType {
   public task_id!: number;
   public user_id!: number;
-  public project_id?: number;
+  public project_id?: string;
   public deadline_id?: number;
   public title!: string;
   public description?: string;
@@ -40,7 +40,7 @@ export default (sequelize: Sequelize) => {
         },
       },
       project_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: true,
         references: {
           model: 'Projects',

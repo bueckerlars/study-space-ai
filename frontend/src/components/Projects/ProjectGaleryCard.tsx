@@ -9,7 +9,7 @@ import { EditIcon, MoreVertical, TrashIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface ProjectGaleryCardProps {
-    projectId: number;
+    projectId: string;
 }
 
 const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {

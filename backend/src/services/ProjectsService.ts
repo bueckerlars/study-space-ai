@@ -43,7 +43,7 @@ class ProjectsService {
   /**
    * Get a project by ID
    */
-  async getProjectById(id: number): Promise<Project | null> {
+  async getProjectById(id: string): Promise<Project | null> {
     try {
       return await databaseController.findProjectById(id);
     } catch (error) {
@@ -55,7 +55,7 @@ class ProjectsService {
   /**
    * Update a project
    */
-  async updateProject(id: number, projectData: Partial<Project>): Promise<[number, Project[]]> {
+  async updateProject(id: string, projectData: Partial<Project>): Promise<[number, Project[]]> {
     try {
       return await databaseController.updateProject(projectData, { project_id: id });
     } catch (error) {
@@ -67,7 +67,7 @@ class ProjectsService {
   /**
    * Delete a project
    */
-  async deleteProject(id: number): Promise<number> {
+  async deleteProject(id: string): Promise<number> {
     try {
       return await databaseController.deleteProject({ project_id: id });
     } catch (error) {
@@ -79,11 +79,23 @@ class ProjectsService {
   /**
    * Get files associated with a project
    */
-  async getProjectFiles(projectId: number) {
+  async getProjectFiles(projectId: string) {
     try {
       return await databaseController.findFilesByProject(projectId);
     } catch (error) {
       logger.error(`Error fetching project files: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Get sources associated with a project
+   */
+  async getProjectSources(projectId: string) {
+    try {
+      return await databaseController.findSourcesByProject(projectId);
+    } catch (error) {
+      logger.error(`Error fetching project sources: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
     }
   }

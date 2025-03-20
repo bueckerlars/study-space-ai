@@ -10,7 +10,7 @@ import { useAuth } from "@/provider/AuthProvider";
 import { File as FileType } from "@/types";
 
 interface AddSourcesDialogProps {
-    projectId?: number;
+    projectId?: string;
     projectName?: string;
     onClose: () => void;
 }

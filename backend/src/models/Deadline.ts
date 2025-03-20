@@ -6,7 +6,7 @@ interface DeadlineCreationAttributes extends Optional<DeadlineType, 'deadline_id
 class Deadline extends Model<DeadlineType, DeadlineCreationAttributes> implements DeadlineType {
   public deadline_id!: number;
   public user_id!: number;
-  public project_id?: number;
+  public project_id?: string;
   public title!: string;
   public description?: string;
   public due_date!: Date;
@@ -38,7 +38,7 @@ export default (sequelize: Sequelize) => {
         },
       },
       project_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: true,
         references: {
           model: 'Projects',

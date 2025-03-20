@@ -18,7 +18,7 @@ const ProjectPage: React.FC = () => {
     const fetchProject = () => {
       setLoading(true);
       
-      getProjectByIdRequest(authToken!, parseInt(projectId!)).then((response) => {
+      getProjectByIdRequest(authToken!, projectId!).then((response) => {
         const project: Project = response.data;
         setProject(project);
         setLoading(false);

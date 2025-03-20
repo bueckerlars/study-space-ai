@@ -299,4 +299,41 @@ router.delete('/:id', AuthMiddleware.authenticate, projectController.deleteProje
  */
 router.get('/:id/files', AuthMiddleware.authenticate, projectController.getProjectFiles);
 
+/**
+ * @swagger
+ * /api/projects/{id}/sources:
+ *   get:
+ *     summary: Get sources associated with a project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Project ID
+ *     responses:
+ *       200:
+ *         description: List of sources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Source'
+ *       400:
+ *         description: Invalid project ID
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - user does not own this project
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:id/sources', AuthMiddleware.authenticate, projectController.getProjectSources);
+
 export default router;

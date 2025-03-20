@@ -143,7 +143,7 @@ export class DatabaseController {
     return this.findAll<Project>('Project', { where: { module_id: moduleId } });
   }
 
-  public async findProjectById(id: number): Promise<Project | null> {
+  public async findProjectById(id: string): Promise<Project | null> {
     return this.findById<Project>('Project', id);
   }
 
@@ -284,7 +284,7 @@ export class DatabaseController {
     return this.findAll<File>('File', { where: { user_id: userId } });
   }
 
-  public async findFilesByProject(projectId: number): Promise<File[]> {
+  public async findFilesByProject(projectId: string): Promise<File[]> {
     return this.findAll<File>('File', { where: { project_id: projectId } });
   }
 
@@ -311,6 +311,10 @@ export class DatabaseController {
 
   public async findSourceById(id: string): Promise<Source | null> {
     return this.findById<Source>('Source', id);
+  }
+
+  public async findSourcesByProject(projectId: string): Promise<Source[]> {
+    return this.findAll<Source>('Source', { where: { project_id: projectId } });
   }
 
   public async findSourcesByStatus(status: string): Promise<Source[]> {
