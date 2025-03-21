@@ -255,6 +255,16 @@ class SourceController {
       });
     }
   }
+
+  // Neuer Endpunkt zum Starten des OCR-Prozesses
+  public async processOcr(req: Request, res: Response): Promise<void> {
+    try {
+      const ocrController = require('./OcrController').default;
+      ocrController.processOcr(req, res);
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'OCR Verarbeitung fehlgeschlagen' });
+    }
+  }
 }
 
 // Create singleton instance

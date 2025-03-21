@@ -321,6 +321,41 @@ router.get('/project/:projectId', sourceController.getSourcesByProject);
 
 /**
  * @swagger
+ * /api/sources/process-ocr:
+ *   post:
+ *     summary: Start the OCR process for a source
+ *     tags: [Sources]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               source_id:
+ *                 type: string
+ *                 description: ID of the source to process OCR on
+ *                 example: 550e8400-e29b-41d4-a716-446655440000
+ *     responses:
+ *       200:
+ *         description: OCR processing started successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *       500:
+ *         description: Server error
+ */
+router.post('/process-ocr', sourceController.processOcr);
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     Source:

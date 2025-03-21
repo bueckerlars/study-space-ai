@@ -328,6 +328,11 @@ export class DatabaseController {
   public async deleteSource(where: WhereOptions): Promise<number> {
     return this.delete('Source', where);
   }
+
+  public async updateSourceOcrFile(source_id: string, ocr_file_id: string): Promise<any> {
+    await this.updateSource({ text_file_id: ocr_file_id }, { source_id });
+    return await this.findSourceById(source_id);
+  }
 }
 
 // Register models with database service

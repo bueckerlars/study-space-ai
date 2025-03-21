@@ -250,6 +250,11 @@ export class FileController {
       }
     }
   }
+
+  // Neue Methode zur Erstellung eines File-Eintrags aus gegebenen Daten
+  async createFileRecord(fileData: Partial<import("../types/File").File>): Promise<import("../types/File").File | null> {
+    return await databaseController.createFile(fileData);
+  }
 }
 
 const fileController = new FileController();
