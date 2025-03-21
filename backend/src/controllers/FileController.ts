@@ -4,6 +4,7 @@ import fileService from '../services/FileService';
 import logger from '../services/logger';
 import { File } from '../types/File';
 import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
 export class FileController {
   async uploadFile(req: Request, res: Response): Promise<void> {
@@ -219,8 +220,37 @@ export class FileController {
       return;
     }
   }
+
+  // Updated method: Delete files linked to a Source object using its file_ids
+  public async deleteFilesBySource(source: import('../types/Source').Source): Promise<void> {
+    const fileIds = [
+      source.source_file_id,
+      source.text_file_id,
+      source.summary_file_id
+    ].filter(id => id);
+    
+    for (const fileId of fileIds) {
+      if (!fileId) {
+        continue;
+      }
+
+      // Finde den File-Eintrag via fileId
+      const fileRecord = await databaseController.findFileById(fileId as string);
+      if (fileRecord) {
+        // Extrahiere den Dateinamen und lösche die physische Datei, falls vorhanden
+        const filename = fileRecord.url.split('/').pop();
+        if (filename) {
+          const filePath = fileService.getFilePath(filename);
+          if (fs.existsSync(filePath)) {
+            await fileService.deleteFile(filename);
+          }
+        }
+        // Lösche den File-Eintrag aus der Datenbank
+        await databaseController.deleteFile({ file_id: fileId });
+      }
+    }
+  }
 }
 
-import { v4 as uuidv4 } from 'uuid';
 const fileController = new FileController();
 export default fileController;

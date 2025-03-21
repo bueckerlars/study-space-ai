@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import sourceService from '../services/SourceService';
 import logger from '../services/logger';
+import fileController from './FileController';
 
 class SourceController {
   /**
@@ -10,6 +11,7 @@ class SourceController {
   public async createSource(req: Request, res: Response): Promise<void> {
     try {
       const sourceData = req.body;
+      logger.info(`Creating source with data: ${JSON.stringify(sourceData)}`);
       const newSource = await sourceService.createSource(sourceData);
       
       res.status(201).json({
@@ -32,6 +34,7 @@ class SourceController {
    */
   public async getAllSources(req: Request, res: Response): Promise<void> {
     try {
+      logger.info(`Fetching all sources`);
       const sources = await sourceService.getAllSources();
       
       res.status(200).json({
@@ -56,6 +59,7 @@ class SourceController {
   public async getSourceById(req: Request, res: Response): Promise<void> {
     try {
       const id = req.params.id;
+      logger.info(`Fetching source by id: ${id}`);
       const source = await sourceService.getSourceById(id);
       
       if (!source) {
@@ -87,6 +91,7 @@ class SourceController {
   public async getSourcesByStatus(req: Request, res: Response): Promise<void> {
     try {
       const status = req.params.status;
+      logger.info(`Fetching sources by status: ${status}`);
       const sources = await sourceService.getSourcesByStatus(status);
       
       res.status(200).json({
@@ -105,20 +110,46 @@ class SourceController {
   }
 
   /**
+   * Get sources by project ID
+   * GET /api/sources/project/:projectId
+   */
+  public async getSourcesByProject(req: Request, res: Response): Promise<void> {
+    try {
+      const projectId = req.params.projectId;
+      logger.info(`Fetching sources by project id: ${projectId}`);
+      const sources = await sourceService.getSourcesByProject(projectId);
+      
+      res.status(200).json({
+        success: true,
+        count: sources.length,
+        data: sources
+      });
+    } catch (error) {
+      logger.error(`Error in getSourcesByProject controller: ${error instanceof Error ? error.message : String(error)}`);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch sources by project',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  /**
    * Update a source
    * PUT /api/sources/:id
    */
   public async updateSource(req: Request, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
+      const source_id = req.params.source_id;
+      logger.info(`Updating source with id: ${source_id}`);
       const sourceData = req.body;
       
-      const updatedSource = await sourceService.updateSource(id, sourceData);
+      const updatedSource = await sourceService.updateSource(source_id, sourceData);
       
       if (!updatedSource) {
         res.status(404).json({
           success: false,
-          message: `Source with ID ${id} not found`
+          message: `Source with ID ${source_id} not found`
         });
         return;
       }
@@ -143,7 +174,8 @@ class SourceController {
    */
   public async updateSourceStatus(req: Request, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
+      const source_id = req.params.source_id;
+      logger.info(`Updating status for source id: ${source_id}`);
       const { status } = req.body;
       
       if (!status) {
@@ -154,12 +186,12 @@ class SourceController {
         return;
       }
       
-      const updatedSource = await sourceService.updateSourceStatus(id, status);
+      const updatedSource = await sourceService.updateSourceStatus(source_id, status);
       
       if (!updatedSource) {
         res.status(404).json({
           success: false,
-          message: `Source with ID ${id} not found`
+          message: `Source with ID ${source_id} not found`
         });
         return;
       }
@@ -184,20 +216,35 @@ class SourceController {
    */
   public async deleteSource(req: Request, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
-      const result = await sourceService.deleteSource(id);
+      const source_id = req.params.source_id;
+      logger.info(`Deleting source with id: ${source_id}`);
+      
+      // Delete linked files before deleting the source
+      const source = await sourceService.getSourceById(source_id);
+      
+      if (!source) {
+        res.status(404).json({
+          success: false,
+          message: `Source with ID ${source_id} not found`
+        });
+        return;
+      }
+      await fileController.deleteFilesBySource(source);
+      
+      // Delete the source  
+      const result = await sourceService.deleteSource(source_id);
       
       if (!result) {
         res.status(404).json({
           success: false,
-          message: `Source with ID ${id} not found`
+          message: `Source with ID ${source_id} not found`
         });
         return;
       }
       
       res.status(200).json({
         success: true,
-        message: `Source with ID ${id} successfully deleted`
+        message: `Source with ID ${source_id} successfully deleted`
       });
     } catch (error) {
       logger.error(`Error in deleteSource controller: ${error instanceof Error ? error.message : String(error)}`);

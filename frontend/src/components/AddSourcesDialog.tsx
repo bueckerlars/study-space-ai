@@ -5,9 +5,14 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 import { Progress } from "./ui/progress";
-import { getFilesByProjectRequest, uploadFileRequest } from "@/services/ApiService";
+import { 
+    createSourceRequest, 
+    uploadFileRequest,
+    updateSourceRequest,
+    getSourcesByProjectRequest
+} from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
-import { File as FileType } from "@/types";
+import { Source } from "@/types/Source";
 
 interface AddSourcesDialogProps {
     projectId?: string;
@@ -18,7 +23,7 @@ interface AddSourcesDialogProps {
 const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogProps) => {
     const { authToken, user } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
-    const [filesInProject, setFilesInProject] = useState<FileType[]>([]);
+    const [sourcesInProject, setSourcesInProject] = useState<Source[]>([]);
     const [open, setOpen] = useState(false);
     const [showButtonText, setShowButtonText] = useState(true);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -38,20 +43,23 @@ const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogP
             return;
         }
 
-        const fetchFiles = () => {
-            getFilesByProjectRequest(authToken!, projectId!).then((response) => {
-                const data: FileType[] = response.data;
-                setFilesInProject(data);
+        const fetchSources = () => {
+            if (!authToken || !projectId) return;
+            
+            getSourcesByProjectRequest(authToken, projectId).then((response) => {
+                // Filter sources by project ID
+                const projectSources: Source[] = response.data.data;
+                setSourcesInProject(projectSources);
             }).catch((error) => {
                 console.error(error);
             });
         };
-        fetchFiles();
-    }, [open]);
+        fetchSources();
+    }, [open, authToken, projectId]);
 
     useEffect(() => {
-        setCombinedFileCount(files?.length + filesInProject?.length);
-    }, [filesInProject, files]);
+        setCombinedFileCount(files?.length + sourcesInProject?.length);
+    }, [sourcesInProject, files]);
 
     // Check button width on mount and resize
     useEffect(() => {
@@ -112,13 +120,44 @@ const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogP
     // Calculate progress percentage
     const progressPercentage = (combinedFileCount / MAX_FILES) * 100;
 
-    const handleOnSubmit = () => {
-        files.map(file => {
-            console.log(file);
-            uploadFileRequest(authToken!, file, user!.user_id!, projectId!);
-        });
-        setFiles([]);
-        setOpen(false);
+    const handleOnSubmit = async () => {
+        if (!authToken || !user || !projectId) return;
+        
+        try {
+            // Process each file sequentially
+            for (const file of files) {
+                // 1. Create a new source for the file
+                const sourceResponse = await createSourceRequest(authToken, {
+                    project_id: projectId,
+                    status: 'pending'
+                });
+                
+                console.log("SourceResponse", sourceResponse.data.data);
+                console.log("SourceResponseData", sourceResponse.data.data);
+                const sourceId = sourceResponse.data.data.source_id;
+                
+                // 2. Upload the file
+                const uploadResponse = await uploadFileRequest(
+                    authToken, 
+                    file, 
+                    user.user_id!, 
+                    projectId
+                );
+                
+                const fileId = uploadResponse.data.file_id;
+                console.log("UploadResponse", uploadResponse);
+                console.log("FileId", fileId);
+                // 3. Update the source with the file ID and status
+                await updateSourceRequest(authToken, sourceId, { source_id: sourceId, source_file_id: fileId, status: 'uploaded' });
+            }
+            
+            // Clear files and close dialog
+            setFiles([]);
+            setOpen(false);
+        } catch (error) {
+            console.error('Error uploading files and creating sources:', error);
+            alert('An error occurred while uploading files. Please try again.');
+        }
     };
 
     return (

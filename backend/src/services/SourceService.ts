@@ -10,8 +10,8 @@ class SourceService {
   public async createSource(sourceData: Partial<Source>): Promise<Source | null> {
     try {
       // Generate ID if not provided
-      if (!sourceData.id) {
-        sourceData.id = uuidv4();
+      if (!sourceData.source_id) {
+        sourceData.source_id = uuidv4();
       }
       
       // Set default status if not provided
@@ -23,7 +23,7 @@ class SourceService {
       sourceData.created_at = new Date();
       sourceData.updated_at = new Date();
       
-      logger.info(`Creating new source with ID: ${sourceData.id}`);
+      logger.info(`Creating new source with ID: ${sourceData.source_id}`);
       return await databaseController.createSource(sourceData);
     } catch (error) {
       logger.error(`Error creating source: ${error instanceof Error ? error.message : String(error)}`);
@@ -71,17 +71,30 @@ class SourceService {
   }
 
   /**
+   * Get sources by project ID
+   */
+  public async getSourcesByProject(projectId: string): Promise<Source[]> {
+    try {
+      logger.info(`Fetching sources for project: ${projectId}`);
+      return await databaseController.findSourcesByProject(projectId);
+    } catch (error) {
+      logger.error(`Error fetching sources by project: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
+  }
+
+  /**
    * Update a source
    */
-  public async updateSource(id: string, sourceData: Partial<Source>): Promise<Source | null> {
+  public async updateSource(source_id: string, sourceData: Partial<Source>): Promise<Source | null> {
     try {
-      logger.info(`Updating source with ID: ${id}`);
+      logger.info(`Updating source with ID: ${source_id}`);
       
       // Set update timestamp
       sourceData.updated_at = new Date();
       
-      await databaseController.updateSource(sourceData, { id });
-      return await this.getSourceById(id);
+      await databaseController.updateSource(sourceData, { source_id });
+      return await this.getSourceById(source_id);
     } catch (error) {
       logger.error(`Error updating source: ${error instanceof Error ? error.message : String(error)}`);
       throw error;
@@ -91,10 +104,10 @@ class SourceService {
   /**
    * Delete a source
    */
-  public async deleteSource(id: string): Promise<boolean> {
+  public async deleteSource(source_id: string): Promise<boolean> {
     try {
-      logger.info(`Deleting source with ID: ${id}`);
-      const deletedCount = await databaseController.deleteSource({ id });
+      logger.info(`Deleting source with ID: ${source_id}`);
+      const deletedCount = await databaseController.deleteSource({ source_id });
       return deletedCount > 0;
     } catch (error) {
       logger.error(`Error deleting source: ${error instanceof Error ? error.message : String(error)}`);
@@ -105,10 +118,10 @@ class SourceService {
   /**
    * Update source status
    */
-  public async updateSourceStatus(id: string, status: string): Promise<Source | null> {
+  public async updateSourceStatus(source_id: string, status: string): Promise<Source | null> {
     try {
-      logger.info(`Updating status of source ${id} to ${status}`);
-      return await this.updateSource(id, { status });
+      logger.info(`Updating status of source ${source_id} to ${status}`);
+      return await this.updateSource(source_id, { status });
     } catch (error) {
       logger.error(`Error updating source status: ${error instanceof Error ? error.message : String(error)}`);
       throw error;

@@ -309,8 +309,8 @@ export class DatabaseController {
     return this.findAll<Source>('Source', options);
   }
 
-  public async findSourceById(id: string): Promise<Source | null> {
-    return this.findById<Source>('Source', id);
+  public async findSourceById(source_id: string): Promise<Source | null> {
+    return this.findById<Source>('Source', source_id);
   }
 
   public async findSourcesByProject(projectId: string): Promise<Source[]> {

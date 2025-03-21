@@ -23,7 +23,7 @@ services:
       - DB_HOST=db
       - DB_DIALECT=${DB_DIALECT}
       - JWT_SECRET=${JWT_SECRET}
-      - LOG_LEVEL=DEBUG
+      - LOG_LEVEL=INFO
     volumes:
       - upload_files:/app/uploads  # Mount the volume for file storage
     depends_on:

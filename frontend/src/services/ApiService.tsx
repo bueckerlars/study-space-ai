@@ -192,3 +192,9 @@ export const deleteSourceRequest = (authToken: string, sourceId: string) => {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
+
+export const getSourcesByProjectRequest = (authToken: string, projectId: string) => {
+  return sourceApi.get(`/project/${projectId}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};

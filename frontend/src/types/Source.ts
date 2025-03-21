@@ -1,5 +1,5 @@
 export interface Source {
-    id: string;
+    source_id: string;
     status: string;
     project_id: string;
     created_at?: Date;

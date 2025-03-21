@@ -1,10 +1,10 @@
 import { Model, DataTypes, Sequelize, Optional } from 'sequelize';
 import { Source as SourceType } from '../types/Source';
 
-interface SourceCreationAttributes extends Optional<SourceType, 'id'> {}
+interface SourceCreationAttributes extends Optional<SourceType, 'source_id'> {}
 
 class Source extends Model<SourceType, SourceCreationAttributes> implements SourceType {
-  public id!: string;
+  public source_id!: string;
   public status!: string;
   public project_id!: string;
   public source_file_id?: string;
@@ -38,7 +38,7 @@ class Source extends Model<SourceType, SourceCreationAttributes> implements Sour
 export default (sequelize: Sequelize) => {
   Source.init(
     {
-      id: {
+      source_id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,

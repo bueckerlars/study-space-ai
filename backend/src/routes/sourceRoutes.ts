@@ -82,13 +82,13 @@ router.get('/', sourceController.getAllSources);
 
 /**
  * @swagger
- * /api/sources/{id}:
+ * /api/sources/{source_id}:
  *   get:
  *     summary: Get a source by ID
  *     tags: [Sources]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: source_id
  *         required: true
  *         schema:
  *           type: string
@@ -111,7 +111,7 @@ router.get('/', sourceController.getAllSources);
  *       500:
  *         description: Server error
  */
-router.get('/:id', sourceController.getSourceById);
+router.get('/:source_id', sourceController.getSourceById);
 
 /**
  * @swagger
@@ -151,13 +151,13 @@ router.get('/status/:status', sourceController.getSourcesByStatus);
 
 /**
  * @swagger
- * /api/sources/{id}:
+ * /api/sources/{source_id}:
  *   put:
  *     summary: Update a source
  *     tags: [Sources]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: source_id
  *         required: true
  *         schema:
  *           type: string
@@ -199,17 +199,17 @@ router.get('/status/:status', sourceController.getSourcesByStatus);
  *       500:
  *         description: Server error
  */
-router.put('/:id', sourceController.updateSource);
+router.put('/:source_id', sourceController.updateSource);
 
 /**
  * @swagger
- * /api/sources/{id}/status:
+ * /api/sources/{source_id}/status:
  *   patch:
  *     summary: Update a source status
  *     tags: [Sources]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: source_id
  *         required: true
  *         schema:
  *           type: string
@@ -247,17 +247,17 @@ router.put('/:id', sourceController.updateSource);
  *       500:
  *         description: Server error
  */
-router.patch('/:id/status', sourceController.updateSourceStatus);
+router.patch('/:source_id/status', sourceController.updateSourceStatus);
 
 /**
  * @swagger
- * /api/sources/{id}:
+ * /api/sources/{source_id}:
  *   delete:
  *     summary: Delete a source
  *     tags: [Sources]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: source_id
  *         required: true
  *         schema:
  *           type: string
@@ -281,7 +281,43 @@ router.patch('/:id/status', sourceController.updateSourceStatus);
  *       500:
  *         description: Server error
  */
-router.delete('/:id', sourceController.deleteSource);
+router.delete('/:source_id', sourceController.deleteSource);
+
+/**
+ * @swagger
+ * /api/sources/project/{projectId}:
+ *   get:
+ *     summary: Get sources by project ID
+ *     tags: [Sources]
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Project ID
+ *     responses:
+ *       200:
+ *         description: List of sources for the specified project
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 3
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Source'
+ *       500:
+ *         description: Server error
+ */
+router.get('/project/:projectId', sourceController.getSourcesByProject);
 
 /**
  * @swagger
@@ -290,7 +326,7 @@ router.delete('/:id', sourceController.deleteSource);
  *     Source:
  *       type: object
  *       properties:
- *         id:
+ *         source_id:
  *           type: string
  *           description: Source ID
  *           example: 550e8400-e29b-41d4-a716-446655440000

@@ -1,8 +1,8 @@
 import { DataTable } from "../ui/data-table";
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { useSourceDataTableColumns } from "./SourceDataTableColumns";
-import { File as FileType } from "@/types";
-import { getFilesByProjectRequest } from "@/services/ApiService";
+import { File as FileType, Source as SourceType } from "@/types";
+import { getFileByIdRequest, getSourcesByProjectRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
 import { FileIcon } from "lucide-react";
 import { Label } from "../ui/label";
@@ -19,22 +19,43 @@ export interface SourcesDataTableRef {
 const SourcesDataTable = forwardRef<SourcesDataTableRef, SourcesDataTableProps>(({ projectId, refreshInterval = 30000 }, ref) => {   
     const { authToken } = useAuth();
     const [data, setData] = useState<FileType[]>([]);
+    const [sources, setSources] = useState<SourceType[]>([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     
     // Pass menu state handlers to columns
     const columns = useSourceDataTableColumns({ 
         onMenuOpen: () => setIsMenuOpen(true),
         onMenuClose: () => setIsMenuOpen(false),
-        onFileRemoved: () => fetchFiles() // Add refresh callback
+        onFileRemoved: () => fetchFiles(), // Add refresh callback
     });
 
-    const fetchFiles = () => {
-        getFilesByProjectRequest(authToken!, projectId).then((response) => {
-            const data: FileType[] = response.data;
-            setData(data);
-        }).catch((error) => {
+    const fetchSources = () => {
+        getSourcesByProjectRequest(authToken!, projectId).then((response) => {
+            const data: SourceType[] = response.data.data;
+            setSources(data);
+        }
+        ).catch((error) => {
             console.error(error);
         });
+    };
+
+    const fetchFiles = async () => {
+        try {
+            const filePromises = sources.map(source => 
+                getFileByIdRequest(authToken!, source.source_file_id!)
+                    .then(response => ({ ...response.data, sourceId: source.source_id }))
+                    .catch(error => {
+                        console.error(error);
+                        return null;
+                    })
+            );
+            
+            const files = await Promise.all(filePromises);
+            setData(files.filter(file => file !== null));
+        } catch (error) {
+            console.error("Error fetching files:", error);
+            setData([]);
+        }
     };
 
     useImperativeHandle(ref, () => ({
@@ -42,15 +63,19 @@ const SourcesDataTable = forwardRef<SourcesDataTableRef, SourcesDataTableProps>(
     }));
 
     useEffect(() => {
-        fetchFiles();
+        fetchSources();
     }, [authToken, projectId]);
+
+    useEffect(() => {
+        fetchFiles();
+    }, [sources]);
 
     // Modified auto-refresh functionality to skip when menu is open
     useEffect(() => {
         const intervalId = setInterval(() => {
             // Only refresh if no menu is currently open
             if (!isMenuOpen) {
-                fetchFiles();
+                fetchSources();
             }
         }, refreshInterval);
         

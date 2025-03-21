@@ -10,14 +10,14 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { deleteFileRequest } from "@/services/ApiService"
+import { deleteSourceRequest } from "@/services/ApiService"
 import { useAuth } from "@/provider/AuthProvider"
 
 // Interface for menu state handlers
 interface SourceDataTableColumnsProps {
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
-  onFileRemoved?: () => void; // New callback for file removal
+  onFileRemoved?: () => void; 
 }
 
 // Component to display appropriate icon based on file type
@@ -34,23 +34,21 @@ const FileTypeIcon = ({ type }: { type: string }) => {
   }
 };
 
-// Create a hook that returns the columns with access to auth context
 export const useSourceDataTableColumns = (props?: SourceDataTableColumnsProps): ColumnDef<FileType>[] => {
-    const { authToken } = useAuth(); // Access authToken from the AuthProvider
+    const { authToken } = useAuth(); 
     
     const handleSummerizeClicked = (file: FileType) => {
         console.log("Summerize clicked: " + file.name)
         props?.onMenuClose?.(); // Close menu after action
     }   
 
-    const handleRemoveClicked = (file: FileType) => {
-        deleteFileRequest(authToken!, file.file_id)
+    const handleRemoveClicked = (file: FileType & { sourceId?: string }) => {
+        deleteSourceRequest(authToken!, file.sourceId!)
             .then(() => {
-                // Call refresh function after successful deletion
                 props?.onFileRemoved?.();
             })
             .catch(error => {
-                console.error("Error deleting file:", error);
+                console.error("Error deleting source:", error);
             })
             .finally(() => {
                 props?.onMenuClose?.(); // Close menu after action

@@ -8,6 +8,7 @@ import cors from 'cors';
 import logger from './services/logger';
 import fileRoutes from './routes/fileRoutes';
 import projectRoutes from './routes/projectRoutes';
+import sourceRoutes from './routes/sourceRoutes';
 
 class Server {
   private app: Express;
@@ -49,6 +50,7 @@ class Server {
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api/projects', projectRoutes);
     this.app.use('/api/files', fileRoutes);
+    this.app.use(/\/api\/sources/, sourceRoutes); 
   }
 
   private setupSwagger(): void {
