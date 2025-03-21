@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { File as FileType } from "@/types"
-import { MoreHorizontal, FileText, FileJson, File, FileDigit, Trash2 } from "lucide-react"
+import { MoreHorizontal, FileDigit, Trash2 } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
 import { Button } from "../ui/button"
 import { deleteSourceRequest } from "@/services/ApiService"
 import { useAuth } from "@/provider/AuthProvider"
+import FileTypeIcon from "../FileTypeIcon"
 
 // Interface for menu state handlers
 interface SourceDataTableColumnsProps {
@@ -19,20 +20,6 @@ interface SourceDataTableColumnsProps {
   onMenuClose?: () => void;
   onFileRemoved?: () => void; 
 }
-
-// Component to display appropriate icon based on file type
-const FileTypeIcon = ({ type }: { type: string }) => {
-  switch (type) {
-    case "application/pdf":
-      return <FileText className="h-5 w-5 text-red-500"/>;
-    case "text/markdown":
-      return <FileJson className="h-5 w-5 text-blue-500"/>;
-    case "text/plain":
-      return <File className="h-5 w-5 text-gray-500" />;
-    default:
-      return <File className="h-5 w-5"/>;
-  }
-};
 
 export const useSourceDataTableColumns = (props?: SourceDataTableColumnsProps): ColumnDef<FileType>[] => {
     const { authToken } = useAuth(); 

@@ -4,6 +4,7 @@ import SourcesDataTable, { SourcesDataTableRef } from "../SourceDataTable/Source
 import { CollapsableCard, CollapsableCardTrigger, CollapsableCardSeparator, CollapsableCardContent } from "../ui/collapsable-card";
 import ConditionalHeader from "../ConditionalHeader";
 import { useState, useRef } from "react";
+import SourceIconTable from "../SourceDataTable/SourceIconTable";
 
 const SourcesCollapsableCard: React.FC<{ project: Project }> = ({ project }) => {
     const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
@@ -25,11 +26,11 @@ const SourcesCollapsableCard: React.FC<{ project: Project }> = ({ project }) => 
                 <CollapsableCardSeparator />
                 <CollapsableCardContent>
                 <div className="w-full flex justify-center ">
-                    <AddSourcesDialog projectName={project.name}  projectId={project.project_id} onClose={handleDialogClosed}/>
+                    <AddSourcesDialog projectId={project.project_id} onClose={handleDialogClosed}/>
                 </div>
                 {!isCollapsed && (
                     <SourcesDataTable ref={sourcesDataTableRef} projectId={project.project_id!.toString()} refreshInterval={1000}/>
-                )}
+                ) || <SourceIconTable projectId={project.project_id!} refreshInterval={1000}/>}
             </CollapsableCardContent>
         </CollapsableCard>
     );

@@ -16,11 +16,10 @@ import { Source } from "@/types/Source";
 
 interface AddSourcesDialogProps {
     projectId?: string;
-    projectName?: string;
     onClose: () => void;
 }
 
-const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogProps) => {
+const AddSourcesDialog = ({ projectId, onClose }: AddSourcesDialogProps) => {
     const { authToken, user } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
     const [sourcesInProject, setSourcesInProject] = useState<Source[]>([]);
@@ -32,10 +31,10 @@ const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogP
 
     // Check if dialog should be opened automatically
     useEffect(() => {
-        if (projectName === "Untitled") {
+        if (sourcesInProject.length === 0) {
             setOpen(true);
         }
-    }, [projectName]);
+    }, [sourcesInProject]);
 
     useEffect(() => {
         if (!open) {
@@ -45,7 +44,6 @@ const AddSourcesDialog = ({ projectId, projectName, onClose }: AddSourcesDialogP
 
         const fetchSources = () => {
             if (!authToken || !projectId) return;
-            
             getSourcesByProjectRequest(authToken, projectId).then((response) => {
                 // Filter sources by project ID
                 const projectSources: Source[] = response.data.data;
