@@ -47,14 +47,35 @@ const useSourcesData = (projectId: string) => {
   useEffect(() => {
     fetchFiles();
 
-    // Process OCR on new files
-    // ToDo: Check source file type
-    sources.forEach(source => {
-      if (source.status === "uploaded") {
-        processOcrRequest(authToken!, source.source_id);
-      }
+    // Process OCR on PDF sources using file type from files and update non-PDF sources
+    const pdfSources = sources.filter((source) => {
+      const fileType = files.find(file => file.file_id === source.source_file_id)?.type;
+      return source.status === "uploaded" && fileType === "application/pdf";
     });
-  }, [fetchFiles]);
+    pdfSources.forEach((source) => {
+      processOcrRequest(authToken!, source.source_id);
+    });
+
+    // Update non-PDF sources to completed if file type is not PDF
+    if (sources.some((source) => {
+      const fileType = files.find(file => file.file_id === source.source_file_id)?.type;
+      return source.status === "uploaded" && fileType !== "application/pdf";
+    })) {
+      setSources((prev) =>
+        prev.map((source) => {
+          const fileType = files.find(file => file.file_id === source.source_file_id)?.type;
+          if (source.status === "uploaded" && fileType !== "application/pdf") {
+            return {
+              ...source,
+              text_file_id: source.source_file_id,
+              status: "completed",
+            };
+          }
+          return source;
+        })
+      );
+    }
+  }, [fetchFiles, sources, authToken]);
 
   return { sources, files, fetchSources, fetchFiles };
 };
