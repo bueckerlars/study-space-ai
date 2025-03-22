@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import sourceController from '../controllers/SourceController';
+import ocrController from '../controllers/OcrController';
 
 const router = Router();
 
@@ -321,21 +322,17 @@ router.get('/project/:projectId', sourceController.getSourcesByProject);
 
 /**
  * @swagger
- * /api/sources/process-ocr:
+ * /api/sources/process-ocr/{source_id}:
  *   post:
  *     summary: Start the OCR process for a source
  *     tags: [Sources]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               source_id:
- *                 type: string
- *                 description: ID of the source to process OCR on
- *                 example: 550e8400-e29b-41d4-a716-446655440000
+ *     parameters:
+ *       - in: path
+ *         name: source_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the source to process OCR on
  *     responses:
  *       200:
  *         description: OCR processing started successfully
@@ -352,7 +349,7 @@ router.get('/project/:projectId', sourceController.getSourcesByProject);
  *       500:
  *         description: Server error
  */
-router.post('/process-ocr', sourceController.processOcr);
+router.post('/process-ocr/:source_id', ocrController.processOcr);
 
 /**
  * @swagger

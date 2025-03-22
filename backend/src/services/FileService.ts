@@ -23,7 +23,7 @@ class FileService {
         cb(null, this.uploadDir);
       },
       filename: (req, file, cb) => {
-        const uniqueFilename = `${uuidv4()}-${file.originalname}`;
+        const uniqueFilename = `${uuidv4()}`;
         cb(null, uniqueFilename);
       }
     });

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/provider/AuthProvider";
-import { getSourcesByProjectRequest, getFileByIdRequest } from "@/services/ApiService";
+import { getSourcesByProjectRequest, getFileByIdRequest, processOcrRequest } from "@/services/ApiService";
 import { Source as SourceType, File as FileType } from "@/types";
 
 const useSourcesData = (projectId: string) => {
@@ -46,6 +46,14 @@ const useSourcesData = (projectId: string) => {
   // Fetch files when sources update
   useEffect(() => {
     fetchFiles();
+
+    // Process OCR on new files
+    // ToDo: Check source file type
+    sources.forEach(source => {
+      if (source.status === "uploaded") {
+        processOcrRequest(authToken!, source.source_id);
+      }
+    });
   }, [fetchFiles]);
 
   return { sources, files, fetchSources, fetchFiles };

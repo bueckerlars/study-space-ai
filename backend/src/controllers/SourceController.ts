@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import sourceService from '../services/SourceService';
 import logger from '../services/logger';
 import fileController from './FileController';
+import ocrController from './OcrController';
 
 class SourceController {
   /**
@@ -153,7 +154,7 @@ class SourceController {
         });
         return;
       }
-      
+
       res.status(200).json({
         success: true,
         data: updatedSource
@@ -255,11 +256,9 @@ class SourceController {
       });
     }
   }
-
-  // Neuer Endpunkt zum Starten des OCR-Prozesses
+  
   public async processOcr(req: Request, res: Response): Promise<void> {
     try {
-      const ocrController = require('./OcrController').default;
       ocrController.processOcr(req, res);
     } catch (error) {
       res.status(500).json({ success: false, message: 'OCR Verarbeitung fehlgeschlagen' });

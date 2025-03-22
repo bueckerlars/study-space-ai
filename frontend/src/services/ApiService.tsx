@@ -200,7 +200,7 @@ export const getSourcesByProjectRequest = (authToken: string, projectId: string)
 };
 
 export const processOcrRequest = (authToken: string, sourceId: string) => {
-  return sourceApi.post('/process-ocr', { source_id: sourceId }, {
+  return sourceApi.post(`/process-ocr/${sourceId}`, {
     headers: { Authorization: `Bearer ${authToken}` },
   });
 };
