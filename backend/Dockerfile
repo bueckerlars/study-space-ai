@@ -1,6 +1,12 @@
 # Use the official Node.js image as the base image
 FROM node:18
 
+# Install Vulkan drivers for GPU acceleration
+RUN apt-get update && apt-get install -y \
+    vulkan-tools \
+    libvulkan1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory
 WORKDIR /app
 
