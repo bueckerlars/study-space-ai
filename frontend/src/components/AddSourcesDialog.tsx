@@ -16,13 +16,13 @@ import { Source } from "@/types/Source";
 
 interface AddSourcesDialogProps {
     projectId?: string;
-    onClose: () => void;
 }
 
-const AddSourcesDialog = ({ projectId, onClose }: AddSourcesDialogProps) => {
+const AddSourcesDialog = ({ projectId }: AddSourcesDialogProps) => {
     const { authToken, user } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
     const [sourcesInProject, setSourcesInProject] = useState<Source[]>([]);
+    const [sourcesLoaded, setSourcesLoaded] = useState(false);
     const [open, setOpen] = useState(false);
     const [showButtonText, setShowButtonText] = useState(true);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -31,25 +31,22 @@ const AddSourcesDialog = ({ projectId, onClose }: AddSourcesDialogProps) => {
 
     // Check if dialog should be opened automatically
     useEffect(() => {
-        if (sourcesInProject.length === 0) {
+        if (sourcesLoaded && sourcesInProject.length === 0) {
             setOpen(true);
         }
-    }, [sourcesInProject]);
+    }, [sourcesLoaded, sourcesInProject]);
 
     useEffect(() => {
-        if (!open) {
-            onClose();
-            return;
-        }
-
         const fetchSources = () => {
             if (!authToken || !projectId) return;
             getSourcesByProjectRequest(authToken, projectId).then((response) => {
                 // Filter sources by project ID
                 const projectSources: Source[] = response.data.data;
                 setSourcesInProject(projectSources);
+                setSourcesLoaded(true);
             }).catch((error) => {
                 console.error(error);
+                setSourcesLoaded(true);
             });
         };
         fetchSources();

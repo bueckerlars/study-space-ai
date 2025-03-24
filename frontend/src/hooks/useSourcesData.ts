@@ -3,10 +3,11 @@ import { useAuth } from "@/provider/AuthProvider";
 import { getSourcesByProjectRequest, getFileByIdRequest, processOcrRequest } from "@/services/ApiService";
 import { Source as SourceType, File as FileType } from "@/types";
 
-const useSourcesData = (projectId: string) => {
+const useSourcesData = (projectId: string, options: { enabled?: boolean } = {}) => {
+  const { enabled = true } = options;
   const { authToken } = useAuth();
   const [sources, setSources] = useState<SourceType[]>([]);
-  const [files, setFiles] = useState<FileType[]>([]);
+  const [files, setFiles] = useState<(FileType & { sourceId: string })[]>([]);
 
   const fetchSources = useCallback(() => {
     if (!authToken) return;
@@ -38,13 +39,16 @@ const useSourcesData = (projectId: string) => {
     }
   }, [authToken, sources]);
 
-  // Fetch sources on mount or project changes
+  // Fetch sources on mount or project changes when enabled
   useEffect(() => {
-    fetchSources();
-  }, [fetchSources]);
+    if (enabled) {
+      fetchSources();
+    }
+  }, [fetchSources, enabled]);
 
-  // Fetch files when sources update
+  // Fetch files and process sources when enabled
   useEffect(() => {
+    if (!enabled) return;
     fetchFiles();
 
     // Process OCR on PDF sources using file type from files and update non-PDF sources
@@ -75,7 +79,7 @@ const useSourcesData = (projectId: string) => {
         })
       );
     }
-  }, [fetchFiles, sources, authToken]);
+  }, [fetchFiles, sources, authToken, enabled]);
 
   return { sources, files, fetchSources, fetchFiles };
 };
