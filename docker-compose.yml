@@ -24,6 +24,7 @@ services:
       - DB_DIALECT=${DB_DIALECT}
       - JWT_SECRET=${JWT_SECRET}
       - LOG_LEVEL=INFO
+      - OLLAMA_API_URL=http://host.docker.internal:11434
     volumes:
       - upload_files:/app/uploads  # Mount the volume for file storage
     depends_on:

@@ -45,6 +45,6 @@ import ollamaController from '../controllers/OllamaController';
 
 const router = Router();
 
-router.post('/summarize', ollamaController.summarize);
+router.post('/summarize/:source_id', ollamaController.summarize);
 
 export default router;

@@ -6,7 +6,7 @@ class OllamaController {
   public async summarize(req: Request, res: Response): Promise<void> {
     logger.info('Received request for summarization'); // added logging
     try {
-      const { source_id } = req.body;
+      const source_id = req.params.source_id;
       if (!source_id) {
         logger.warn('Summarize request missing source_id'); // added logging
         res.status(400).json({ success: false, message: 'source_id is required' });

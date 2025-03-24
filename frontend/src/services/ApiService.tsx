@@ -38,6 +38,14 @@ const sourceApi = axios.create({
   withCredentials: true,
 });
 
+const ollamaApi = axios.create({
+  baseURL: `${API_BASE_URL}/api/ollama`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+});
+
 // Auth API functions
 export const loginRequest = (email: string, password: string) => {
   return authApi.post('/login', { email, password });
@@ -202,5 +210,16 @@ export const getSourcesByProjectRequest = (authToken: string, projectId: string)
 export const processOcrRequest = (authToken: string, sourceId: string) => {
   return sourceApi.post(`/process-ocr/${sourceId}`, {
     headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
+// New Ollama API function
+export const summarizeRequest = (authToken: string, sourceId: string) => {
+  return ollamaApi.post(`/summarize/${sourceId}`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+      'Content-Type': 'application/json'
+    },
+    withCredentials: true,
   });
 };

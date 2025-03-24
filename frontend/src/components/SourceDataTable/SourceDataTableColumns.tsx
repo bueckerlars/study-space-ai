@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { deleteSourceRequest } from "@/services/ApiService"
+import { deleteSourceRequest, summarizeRequest } from "@/services/ApiService"
 import { useAuth } from "@/provider/AuthProvider"
 import FileTypeIcon from "../FileTypeIcon"
 
@@ -24,8 +24,11 @@ interface SourceDataTableColumnsProps {
 export const useSourceDataTableColumns = (props?: SourceDataTableColumnsProps): ColumnDef<FileType>[] => {
     const { authToken } = useAuth(); 
     
-    const handleSummerizeClicked = (file: FileType) => {
-        console.log("Summerize clicked: " + file.name)
+    const handleSummerizeClicked = (file: FileType & { sourceId?: string }) => {
+        console.log("Summerize clicked: " + file.name);
+
+        summarizeRequest(authToken!, file.sourceId!);
+
         props?.onMenuClose?.(); // Close menu after action
     }   
 
