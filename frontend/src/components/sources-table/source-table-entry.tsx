@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreVertical, Trash2, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import FileTypeIcon from "../FileTypeIcon";
 import { Checkbox } from "../ui/checkbox";
@@ -14,9 +14,10 @@ interface SourceTableEntryProps {
     isCollapsed: boolean;
     onDropdownOpenChange?: (open: boolean) => void;
     handleOnClick: (source_id: string) => void;
+    isLoading: boolean;
 }
 
-const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId, fileType, isCollapsed, onDropdownOpenChange, handleOnClick }) => {
+const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId, fileType, isCollapsed, onDropdownOpenChange, handleOnClick, isLoading }) => {
     const { authToken } = useAuth();
     const [isHovered, setIsHovered] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,7 +29,11 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
     if (isCollapsed) {
         return (
             <div className="items-center">
-                <Button variant={"ghost"} className="h-10 w-10 px-2 rounded-full" onClick={() => handleOnClick(sourceId)}>
+                <Button 
+                    variant={"ghost"} 
+                    className="h-10 w-10 px-2 rounded-full" 
+                    onClick={() => { if(!isLoading) handleOnClick(sourceId); }}
+                >
                     <FileTypeIcon type={fileType} />
                 </Button>
             </div>
@@ -46,14 +51,16 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
                     }
                 }}
                 className={`flex flex-row justify-between rounded-full mt-2 pl-2 pr-4 py-1 w-full items-center min-h-12 ${ (isHovered || dropdownOpen) ? "bg-accent" : "" }`}
-                onClick={() => handleOnClick(sourceId)}
+                onClick={() => { if(!isLoading) handleOnClick(sourceId); }}
             >
                 <div className="flex flex-row justify-start items-center">
                     <div className="mr-2 min-w-10">
-                        { (isHovered || dropdownOpen) ? (
+                        { (!isLoading && (isHovered || dropdownOpen)) ? (
                             <DropdownMenu onOpenChange={(open) => { 
-                                setDropdownOpen(open); 
-                                if(onDropdownOpenChange) onDropdownOpenChange(open);
+                                if(!isLoading) {
+                                    setDropdownOpen(open); 
+                                    if(onDropdownOpenChange) onDropdownOpenChange(open);
+                                }
                             }}>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -79,7 +86,11 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
                     </p>
                 </div>
     
-                <Checkbox />
+                { isLoading ? (
+                    <Loader2 className="animate-spin h-5 w-5" />
+                ) : (
+                    <Checkbox />
+                ) }
             </div>
         );
     }

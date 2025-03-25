@@ -12,7 +12,15 @@ interface SourceTableProps {
 const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handleOnEntryClicked }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     // Prevent refetching when a dropdown is open.
-    const { files } = useSourcesData(projectId, { enabled: !dropdownOpen });
+    const { files, sources } = useSourcesData(projectId, { enabled: !dropdownOpen });
+
+    const checkIsLoading = (sourceId: string) => {
+        const source = sources.find((source) => source.source_id === sourceId);
+        if (source?.summary_file_id) {
+            return false;
+        }
+        return true;
+    };
 
     return (
         <div className="flex flex-col mt-6">
@@ -29,6 +37,7 @@ const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handl
                     onDropdownOpenChange={setDropdownOpen} 
                     isCollapsed={isCollapsed!}
                     handleOnClick={handleOnEntryClicked}
+                    isLoading={checkIsLoading(file.sourceId)}
                 />
             ))}
         </div>
