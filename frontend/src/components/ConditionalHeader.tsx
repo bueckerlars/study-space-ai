@@ -2,9 +2,9 @@ import { CollapsableCardHeader, CollapsableCardTitle, useCollapsableCard } from 
 
 // Header component that only renders when card is expanded
 const ConditionalHeader: React.FC<{title: string}> = ({ title }) => {
-    const { isCollapsed } = useCollapsableCard();
+    const { cardState } = useCollapsableCard();
     
-    if (isCollapsed) {
+    if (cardState === "collapsed") {
     return null;
     }
     

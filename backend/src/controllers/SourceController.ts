@@ -59,14 +59,14 @@ class SourceController {
    */
   public async getSourceById(req: Request, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
-      logger.info(`Fetching source by id: ${id}`);
-      const source = await sourceService.getSourceById(id);
+      const source_id = req.params.source_id;
+      logger.info(`Fetching source by id: ${source_id}`);
+      const source = await sourceService.getSourceById(source_id);
       
       if (!source) {
         res.status(404).json({
           success: false,
-          message: `Source with ID ${id} not found`
+          message: `Source with ID ${source_id} not found`
         });
         return;
       }

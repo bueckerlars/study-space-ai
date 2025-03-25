@@ -6,9 +6,10 @@ import { Checkbox } from "../ui/checkbox";
 interface SourceTableProps {
     projectId: string;
     isCollapsed?: boolean;
+    handleOnEntryClicked: (source_id: string) => void;
 }
 
-const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed }) => {
+const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handleOnEntryClicked }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     // Prevent refetching when a dropdown is open.
     const { files } = useSourcesData(projectId, { enabled: !dropdownOpen });
@@ -27,6 +28,7 @@ const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed }) => 
                     fileType={file.type} 
                     onDropdownOpenChange={setDropdownOpen} 
                     isCollapsed={isCollapsed!}
+                    handleOnClick={handleOnEntryClicked}
                 />
             ))}
         </div>

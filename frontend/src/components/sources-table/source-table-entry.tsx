@@ -13,9 +13,10 @@ interface SourceTableEntryProps {
     fileType: string;
     isCollapsed: boolean;
     onDropdownOpenChange?: (open: boolean) => void;
+    handleOnClick: (source_id: string) => void;
 }
 
-const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId, fileType, isCollapsed, onDropdownOpenChange }) => {
+const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId, fileType, isCollapsed, onDropdownOpenChange, handleOnClick }) => {
     const { authToken } = useAuth();
     const [isHovered, setIsHovered] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -27,7 +28,7 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
     if (isCollapsed) {
         return (
             <div className="items-center">
-                <Button variant={"ghost"} className="h-10 w-10 px-2 rounded-full">
+                <Button variant={"ghost"} className="h-10 w-10 px-2 rounded-full" onClick={() => handleOnClick(sourceId)}>
                     <FileTypeIcon type={fileType} />
                 </Button>
             </div>
@@ -45,6 +46,7 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
                     }
                 }}
                 className={`flex flex-row justify-between rounded-full mt-2 pl-2 pr-4 py-1 w-full items-center min-h-12 ${ (isHovered || dropdownOpen) ? "bg-accent" : "" }`}
+                onClick={() => handleOnClick(sourceId)}
             >
                 <div className="flex flex-row justify-start items-center">
                     <div className="mr-2 min-w-10">

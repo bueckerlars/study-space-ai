@@ -42,7 +42,7 @@ class OllamaService {
     const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
     const apiResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
       model: 'llama3.2',
-      prompt: `Fasse folgenden Text zusammen. Schreibe zuerst eine kurze Zusammenfassung in einem Fließttext und Fasse dann alle Kernaussagen in Stichpunkten zusammen:\n\n${textContent}`,
+      prompt: `Fasse folgenden Text kurz zusammen:\n\n${textContent}`,
       stream: false
     });
     console.log("Ollam API Response: " + apiResponse);
