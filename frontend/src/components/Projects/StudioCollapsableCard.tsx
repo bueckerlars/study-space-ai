@@ -18,7 +18,7 @@ const StudioContent: React.FC = () => {
     </div>
   );
 };
-
+//@ts-ignore
 const StudioCollapsableCard: React.FC<{ project: Project }> = ({ project }) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [showButtonText, setShowButtonText] = useState(true);

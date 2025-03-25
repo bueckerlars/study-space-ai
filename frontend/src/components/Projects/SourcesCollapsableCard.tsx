@@ -18,7 +18,7 @@ const SourcesContent: React.FC<{ projectId: string}> = ({ projectId }) => {
   };
 
   if (cardState === "extended") {
-    return <SourceDetails sourceId={source_id} />;
+    return <SourceDetails sourceId={source_id!} />;
   }
 
   return (
