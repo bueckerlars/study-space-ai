@@ -50,7 +50,7 @@ export default (sequelize: Sequelize) => {
         },
       },
       name: {
-        type: DataTypes.STRING(255).BINARY,
+        type: DataTypes.STRING(255),
         allowNull: false,
       },
       size: {

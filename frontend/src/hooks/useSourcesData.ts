@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/provider/AuthProvider";
-import { getSourcesByProjectRequest, getFileByIdRequest, processOcrRequest } from "@/services/ApiService";
+import { getSourcesByProjectRequest, getFileByIdRequest, processOcrRequest, summarizeRequest } from "@/services/ApiService";
 import { Source as SourceType, File as FileType } from "@/types";
 
 const useSourcesData = (projectId: string, options: { enabled?: boolean } = {}) => {
@@ -79,7 +79,26 @@ const useSourcesData = (projectId: string, options: { enabled?: boolean } = {}) 
         })
       );
     }
+
+    const sourcesForSummary = sources.filter((source) => {
+      return source.status === "processed";
+    });
+    sourcesForSummary.forEach((source) => {
+      summarizeRequest(authToken!, source.source_id);
+    });
   }, [fetchFiles, sources, authToken, enabled]);
+
+  // Add polling effect to periodically refetch sources and files
+  useEffect(() => {
+    if (!enabled) return;
+
+    const intervalId = setInterval(() => {
+      fetchSources();
+      fetchFiles();
+    }, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(intervalId);
+  }, [enabled, fetchSources, fetchFiles]);
 
   return { sources, files, fetchSources, fetchFiles };
 };

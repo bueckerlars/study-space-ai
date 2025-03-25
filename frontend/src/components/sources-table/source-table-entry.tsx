@@ -73,7 +73,7 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
                     </div>
     
                     <p className="max-w-[240px] truncate">
-                        <span>{fileName}</span> 
+                        <span>{typeof fileName === 'string' ? fileName : ""}</span>
                     </p>
                 </div>
     
