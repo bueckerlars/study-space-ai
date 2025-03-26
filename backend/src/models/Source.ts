@@ -12,6 +12,7 @@ class Source extends Model<SourceType, SourceCreationAttributes> implements Sour
   public summary_file_id?: string;
   public created_at!: Date;
   public updated_at!: Date;
+  public themes?: string[];
 
   // Associations
   static associate(models: any) {
@@ -78,6 +79,10 @@ export default (sequelize: Sequelize) => {
           model: 'Files',
           key: 'file_id',
         },
+      },
+      themes: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
       },
       created_at: {
         type: DataTypes.DATE,

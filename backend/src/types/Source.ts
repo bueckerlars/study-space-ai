@@ -7,4 +7,5 @@ export interface Source {
     source_file_id?: string;
     text_file_id?: string;
     summary_file_id?: string;
+    themes?: string[];
 }

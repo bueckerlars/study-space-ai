@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useSourcesData from "@/hooks/useSourcesData";
 import SourceTableEntry from "./source-table-entry";
 import { Checkbox } from "../ui/checkbox";
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface SourceTableProps {
     projectId: string;
@@ -29,16 +30,25 @@ const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handl
                 <Checkbox />
             </div>)}
             {files.map((file) => (
-                <SourceTableEntry 
-                    key={file.file_id} 
-                    sourceId={file.sourceId}
-                    fileName={file.name} 
-                    fileType={file.type} 
-                    onDropdownOpenChange={setDropdownOpen} 
-                    isCollapsed={isCollapsed!}
-                    handleOnClick={handleOnEntryClicked}
-                    isLoading={checkIsLoading(file.sourceId)}
-                />
+                <Tooltip delayDuration={1000}>
+                    <TooltipTrigger asChild>
+                        <div>
+                            <SourceTableEntry 
+                                key={file.file_id} 
+                                sourceId={file.sourceId}
+                                fileName={file.name} 
+                                fileType={file.type} 
+                                onDropdownOpenChange={setDropdownOpen} 
+                                isCollapsed={isCollapsed!}
+                                handleOnClick={handleOnEntryClicked}
+                                isLoading={checkIsLoading(file.sourceId)}
+                            />
+                        </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        {file.name}
+                    </TooltipContent>
+                </Tooltip>
             ))}
         </div>
     );

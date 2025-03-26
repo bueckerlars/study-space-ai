@@ -66,13 +66,12 @@ class OllamaService {
       prompt: prompt,
       stream: false
     });
-    console.log("Ollam API Response: " + apiResponse);
     const summary = apiResponse.data.response
     logger.debug(`Received summary from API: ${summary.substring(0, 50)}...`); 
     
     // Create summary file
     const summaryFileId = `${uuidv4()}`;
-    const summaryFilePath = path.join(process.cwd(), 'uploads', summaryFileId + ".txt");
+    const summaryFilePath = path.join(process.cwd(), 'uploads', summaryFileId + "_summary.txt");
     logger.info(`Writing summary to file: ${summaryFilePath}`);
     fs.writeFileSync(summaryFilePath, summary, 'utf8');
 
@@ -86,9 +85,40 @@ class OllamaService {
         size: fs.statSync(summaryFilePath).size,
       }
     );
+
+    const themeResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
+      model: "deepseek-r1:8b",
+      options: {
+          system: "Du bist ein hilfreicher Assistent, der Kerninformationen aus Dokumenten extrahiert.",
+      },
+      stream: false,
+      prompt: "Extrahiere die Hauptthemen und Kernaussagen aus dem folgenden Text in jeweils 1 bis 3 Wörten und gib sie als JSON Array von Strings zurück.\n\nText: " + textContent +  "\n\nJSON Array der Themen:",
+      format: {
+          type: "object",
+          properties: {
+              themes: {
+                  type: "array",
+                  items: {
+                      type: "string",
+                  }
+              }
+          },
+          "required": ["themes"]
+      }
+    });
+    // Erhalte Rohdaten und parse diese, falls es ein JSON-String ist
+    const rawThemes = themeResponse.data.response;
+    logger.debug(`Received themes from API: ${typeof rawThemes === 'string' ? rawThemes.substring(0, 50) : '...'}...`);
+    const parsedThemes = typeof rawThemes === 'string' ? JSON.parse(rawThemes) : rawThemes;
+    logger.debug("Themes: " + parsedThemes.themes);
+    const themes: string[] = parsedThemes.themes;
+    if (!themes) {
+      logger.error(`No themes found in summary for source id: ${sourceId}`);
+      throw new Error(`No themes found in summary for source id: ${sourceId}`);
+    }
     
     // Update source with summary file id and status "summarized"
-    await sourceService.updateSource(sourceId, { summary_file_id: summaryFileId, status: 'summarized' });
+    await sourceService.updateSource(sourceId, { summary_file_id: summaryFileId, themes: themes, status: 'summarized' });
     logger.info(`Updated source ${sourceId} with summary file ${summaryFileId}`);
 
     logger.info(`Summarized source ${sourceId} and created summary file ${summaryFileId}`);

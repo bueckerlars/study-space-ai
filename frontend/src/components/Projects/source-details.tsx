@@ -5,6 +5,7 @@ import { getFileContentRequest, getSourceByIdRequest } from "@/services/ApiServi
 import { useAuth } from "@/provider/AuthProvider";
 import { Source } from "@/types";
 import { ScrollArea } from "../ui/scroll-area";
+import ThemeList from "./theme-list";
 
 interface SourceDetailsProps {
     sourceId: string;
@@ -12,6 +13,7 @@ interface SourceDetailsProps {
 
 const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
     const { authToken } = useAuth();
+    const [themes, setThemes] = useState<string[]>();
     const [sourceSummary, setSourceSummary] = useState<string>();
     const [sourceText, setSourceText] = useState<string>();
 
@@ -21,6 +23,13 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
             .then((response) => {
                 console.log("Source Response", response);
                 const source: Source = response.data.data;
+                console.log("Source", source);
+                const jsonArray = source.themes;
+                const stringArray: string[] = Array.isArray(jsonArray) 
+                    ? jsonArray.filter((item): item is string => typeof item === "string") 
+                    : [];
+                console.log("Themes", stringArray);
+                setThemes(stringArray);
 
                 getFileContentRequest(authToken!, source.text_file_id!)
                 .then((response) => {
@@ -54,7 +63,12 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
                 </div>
                 <Separator />
                 <ScrollArea className="h-80 pr-4">
-                    <span>{sourceSummary}</span>
+                    <div className="flex flex-row gap-4 justfiy-between">
+                        <span className="flex-3">{sourceSummary}</span>
+                        <span className="flex-1">
+                            <ThemeList themes={themes ? themes : []} />
+                        </span>
+                    </div>
                 </ScrollArea>
             </div>
             <div className="p-4">

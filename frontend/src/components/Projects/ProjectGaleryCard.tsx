@@ -69,7 +69,8 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
                             <MoreVertical size={24} />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
+                    {/* Added onClick to prevent propagation */}
+                    <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenuItem>
                             <EditIcon/> Edit
                         </DropdownMenuItem>
