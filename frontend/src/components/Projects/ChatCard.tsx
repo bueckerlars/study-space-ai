@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SendHorizonal } from "lucide-react";
 
 //@ts-ignore
 const ChatCard: React.FC<{project: Project}> = ({ project }) => {
@@ -21,8 +21,8 @@ const ChatCard: React.FC<{project: Project}> = ({ project }) => {
             </CardContent>
             <CardFooter>
             <Card className="w-full flex flex-row p-2">
-                <Input placeholder='Add Source to begin a chat' className='flex-90'/>
-                <Button className='flex-10'><PlusIcon size={25}></PlusIcon></Button>
+                <Input placeholder='Add Source to begin a chat' className='flex-95'/>
+                <Button className='flex-5 rounded-full'><SendHorizonal size={15} /></Button>
             </Card>
             </CardFooter>
         </Card>

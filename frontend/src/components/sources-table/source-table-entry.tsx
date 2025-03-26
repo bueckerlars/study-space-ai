@@ -63,12 +63,12 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
                                 }
                             }}>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <Button onClick={(e) => e.stopPropagation()} variant="ghost" className="h-8 w-8 p-0">
                                         <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="start">
-                                    <DropdownMenuItem variant="destructive" onClick={handleRemove}>
+                                    <DropdownMenuItem variant="destructive" onClick={(e) => { e.stopPropagation(); handleRemove(); }}>
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Remove
                                     </DropdownMenuItem>

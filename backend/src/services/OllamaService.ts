@@ -39,10 +39,31 @@ class OllamaService {
     
     // Generate summary using Ollama API (according to the docs)
     logger.info(`Sending text to Ollama API for summarization`); 
+    const prompt: string = `Bitte fasse das folgende Dokument in maximal 10 Sätzen zusammen und extrahiere die wichtigsten Informationen und Kernaussagen.
+      \n
+      ${textContent}
+      \n
+      Die Zusammenfassung sollte folgende Eigenschaften aufweisen: \n
+
+      * **Prägnant:** Die wichtigsten Punkte auf den Punkt gebracht.
+      * **Informativ:** Die zentralen Themen und Argumente des Dokuments abdecken.
+      * **Kohärent:** Die Zusammenfassung sollte einen klaren und logischen Fluss haben.
+      * **Objektiv:** Die ursprüngliche Bedeutung des Dokuments beibehalten, ohne eigene Interpretationen oder Meinungen einzufügen.
+
+      Optional (füge diese Anweisungen hinzu, wenn sie relevant sind): \n
+
+      * **Fokus auf:** [Optional: Hier einen spezifischen Fokus angeben, z.B. "die wichtigsten Schlussfolgerungen", "die beschriebenen Methoden", "die Auswirkungen der Ergebnisse"].
+      * **Zielgruppe:** [Optional: Hier eine Zielgruppe angeben, z.B. "für ein technisches Publikum", "für ein allgemeines Publikum"].
+      * **Schlüsselwörter:** [Optional: Bitte liste auch die wichtigsten Schlüsselwörter auf, die im Dokument vorkommen].
+      \n
+      Beginne die Zusammenfassung mit einem einleitenden Satz, der das Hauptthema des Dokuments zusammenfasst.`
     const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
     const apiResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
       model: 'llama3.2',
-      prompt: `Fasse folgenden Text kurz zusammen:\n\n${textContent}`,
+      options: {
+        system: "Du bist ein erfahrener Assistent für die Dokumentenanalyse und -zusammenfassung. Deine Aufgabe ist es, prägnante und informative Zusammenfassungen von Textdokumenten zu erstellen."
+      },
+      prompt: prompt,
       stream: false
     });
     console.log("Ollam API Response: " + apiResponse);
