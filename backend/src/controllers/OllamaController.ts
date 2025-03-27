@@ -44,6 +44,19 @@ class OllamaController {
       res.status(500).json({ success: false, message: 'Failed to fetch models' });
     }
   }
+
+  public async summarizeProject(req: Request, res: Response): Promise<void> {
+    const projectId = req.params.project_id;
+    logger.info(`Received request to summarize project: ${projectId}`);
+    try {
+      const result = await ollamaService.summarizeProject(projectId);
+      logger.info(`Project ${projectId} summarized successfully`);
+      res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      logger.error(`Error in summarizeProject: ${error instanceof Error ? error.message : String(error)}`);
+      res.status(500).json({ success: false, message: 'Failed to summarize project' });
+    }
+  }
 }
 
 const ollamaController = new OllamaController();

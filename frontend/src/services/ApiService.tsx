@@ -232,6 +232,12 @@ export const generateProjectTitleRequest = (authToken: string, projectId: string
   });
 };
 
+export const generateProjectSummaryRequest = (authToken: string, projectId: string) => {
+  return ollamaApi.post(`/summarize-project/${projectId}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
 export const getModelsRequest = (authToken: string) => {
   return ollamaApi.get('/models', {
     headers: { Authorization: `Bearer ${authToken}` },

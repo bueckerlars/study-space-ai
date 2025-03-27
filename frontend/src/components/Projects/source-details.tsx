@@ -8,6 +8,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import ThemeList from "./theme-list";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Button } from "../ui/button";
+import ReactMarkdown from "react-markdown";
 
 interface SourceDetailsProps {
     sourceId: string;
@@ -57,7 +58,7 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
     }, [sourceId]);
 
     return (
-        <div className="flex flex-col gap-2 h-full">
+        <div className="flex flex-col gap-2">
             <Collapsible defaultOpen>
                 <div className="rounded-lg p-4 bg-accent flex flex-col gap-2 flex-shrink-0">
                     <div className="flex flex-row items-center justify-between">
@@ -75,7 +76,7 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
                         <Separator />   
                         <ScrollArea className="h-80 pr-4">
                             <div className="flex flex-row gap-4 justfiy-between mt-4">
-                                <span className="flex-3">{sourceSummary}</span>
+                                <span className="flex-3"><ReactMarkdown>{sourceSummary}</ReactMarkdown></span>
                                 <span className="flex-1">
                                     <ThemeList themes={themes ? themes : []} />
                                 </span>
@@ -84,7 +85,7 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
                     </CollapsibleContent>
                 </div>
             </Collapsible>
-            <div className="flex p-4 flex-grow max-h-200">
+            <div className="flex p-4 h-110">
                 <ScrollArea>
                     <span>{sourceText}</span>
                 </ScrollArea>

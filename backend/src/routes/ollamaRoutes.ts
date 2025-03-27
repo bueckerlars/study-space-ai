@@ -103,10 +103,47 @@ import ollamaController from '../controllers/OllamaController';
  *         description: Serverfehler
  */
 
+/**
+ * @swagger
+ * /api/ollama/summarize-project/{project_id}:
+ *   post:
+ *     tags:
+ *       - Ollama
+ *     summary: Erstelle eine Zusammenfassung eines gesamten Projekts
+ *     description: Erzeugt eine Zusammenfassung für das gesamte Projekt, das über die project_id identifiziert wird, mithilfe der Ollama API.
+ *     parameters:
+ *       - in: path
+ *         name: project_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Die project_id des Projekts.
+ *     responses:
+ *       200:
+ *         description: Projektsumfassung erfolgreich erstellt
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             data:
+ *               type: object
+ *               properties:
+ *                 summary_project_id:
+ *                   type: string
+ *                 summary:
+ *                   type: string
+ *       400:
+ *         description: Ungültige Anfrage
+ *       500:
+ *         description: Serverfehler
+ */
+
 const router = Router();
 
 router.post('/summarize/:source_id', ollamaController.summarize);
 router.post('/generate-project-title/:project_id', ollamaController.generateProjectTitle);
-router.get('/models', ollamaController.getModels); // new route for fetching models
+router.get('/models', ollamaController.getModels);
+router.post('/summarize-project/:project_id', ollamaController.summarizeProject);
 
 export default router;

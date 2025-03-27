@@ -9,6 +9,9 @@ import sourceService from './SourceService';
 import ProjectsService from './ProjectsService';
 
 class OllamaService {
+  // Track active project summarization requests
+  private activeProjectSummaries: Set<string> = new Set();
+
   async summarize(sourceId: string): Promise<{ summary_file_id: string; summary: string }> {
     logger.info(`Starting summarization process for source: ${sourceId}`); 
     
@@ -175,6 +178,67 @@ class OllamaService {
     const response = await axios.get(`${ollamaApiUrl}/api/tags`);
     logger.debug("Received models: " + JSON.stringify(response.data));
     return response.data;
+  }
+
+  async summarizeProject(projectId: string): Promise<{ summary: string }> {
+    logger.info(`Starting project summarization for project: ${projectId}`);
+    
+    // Prevent concurrent summarizations for the same project
+    if (this.activeProjectSummaries.has(projectId)) {
+      logger.warn(`Project summarization already in progress for project: ${projectId}`);
+      throw new Error(`Summarization already in progress for project: ${projectId}`);
+    }
+    this.activeProjectSummaries.add(projectId);
+
+    try {
+      const sources = await ProjectsService.getProjectSources(projectId);
+      if (!sources || sources.length === 0) {
+        logger.error(`No sources found for project ${projectId}`);
+        throw new Error(`No sources found for project ${projectId}`);
+      }
+      
+      // Replace combinedText building with an array of texts annotated with their index
+      const texts: string[] = [];
+      for (const [index, source] of sources.entries()) {
+        if (source.text_file_id) {
+          const file = await databaseController.findFileById(source.text_file_id);
+          if (file) {
+            logger.debug(`Reading text file for source ${source.source_id}`);
+            const textContent = fs.readFileSync(file.url, 'utf8');
+            texts.push(`Text ${index + 1}:\n${textContent}`);
+          }
+        }
+      }
+      
+      if (texts.length === 0) {
+        logger.error(`No text content available from sources for project ${projectId}`);
+        throw new Error(`No text content available from sources for project ${projectId}`);
+      }
+      
+      const combinedText = texts.join("\n\n");
+      const prompt = `Bitte fasse die folgenden ${texts.length} Texte aus dem Projekt in maximal 5 Sätzen zusammen und extrahiere die wichtigsten Informationen.
+Jeder Text beginnt mit einer Zeile "Text X:" (wobei X die laufende Nummer ist), um den Start des Textes zu markieren:\n\n${combinedText}`;
+      
+      const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+      logger.info(`Sending project summary prompt to Ollama API`);
+      const apiResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
+        model: 'llama3.2',
+        options: {
+          system: "Du bist ein erfahrener Assistent für die Dokumentenanalyse. Erstelle eine klare und prägnante Zusammenfassung des Projekts basierend auf den gelieferten Texten."
+        },
+        prompt: prompt,
+        stream: false
+      });
+      const summary = apiResponse.data.response;
+      logger.debug(`Received project summary: ${summary.substring(0, 50)}...`);
+
+      // Update project description with the summary
+      await ProjectsService.updateProject(projectId, { description: summary });
+      
+      return { summary };
+    } finally {
+      this.activeProjectSummaries.delete(projectId);
+    }
   }
 
 }
