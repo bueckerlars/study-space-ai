@@ -79,9 +79,34 @@ import ollamaController from '../controllers/OllamaController';
  *         description: Serverfehler
  */
 
+/**
+ * @swagger
+ * /api/ollama/models:
+ *   get:
+ *     tags:
+ *       - Ollama
+ *     summary: Gibt die verfügbaren Modelle von Ollama zurück
+ *     description: Ruft die Liste der verfügbaren Modelle von der Ollama API ab.
+ *     responses:
+ *       200:
+ *         description: Erfolgreich die Modelle abgerufen
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             data:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       500:
+ *         description: Serverfehler
+ */
+
 const router = Router();
 
 router.post('/summarize/:source_id', ollamaController.summarize);
 router.post('/generate-project-title/:project_id', ollamaController.generateProjectTitle);
+router.get('/models', ollamaController.getModels); // new route for fetching models
 
 export default router;

@@ -33,6 +33,17 @@ class OllamaController {
       res.status(500).json({ success: false, message: 'Failed to generate project title' });
     }
   }
+
+  public async getModels(req: Request, res: Response): Promise<void> {
+    logger.info("Received request to fetch available models");
+    try {
+      const models = await ollamaService.getModels();
+      res.status(200).json({ success: true, data: models });
+    } catch (error) {
+      logger.error(`Error fetching models: ${error instanceof Error ? error.message : String(error)}`);
+      res.status(500).json({ success: false, message: 'Failed to fetch models' });
+    }
+  }
 }
 
 const ollamaController = new OllamaController();

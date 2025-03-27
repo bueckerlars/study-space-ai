@@ -169,6 +169,13 @@ class OllamaService {
     return title;
   }
 
+  async getModels(): Promise<any> {
+    logger.info("Fetching available models from Ollama API");
+    const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+    const response = await axios.get(`${ollamaApiUrl}/api/tags`);
+    logger.debug("Received models: " + JSON.stringify(response.data));
+    return response.data;
+  }
 
 }
 
