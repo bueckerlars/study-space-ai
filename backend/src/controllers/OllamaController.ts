@@ -20,6 +20,19 @@ class OllamaController {
       res.status(500).json({ success: false, message: 'Failed to summarize source' });
     }
   }
+
+  public async generateProjectTitle(req: Request, res: Response): Promise<void> {
+    const projectId = req.params.project_id;
+    logger.info(`Received request to generate title for project: ${projectId}`);
+    try {
+      const title = await ollamaService.generateProjectTitle(projectId);
+      logger.info(`Generated title for project ${projectId}: ${title}`);
+      res.status(200).json({ success: true, title });
+    } catch (error) {
+      logger.error(`Error generating project title: ${error instanceof Error ? error.message : String(error)}`);
+      res.status(500).json({ success: false, message: 'Failed to generate project title' });
+    }
+  }
 }
 
 const ollamaController = new OllamaController();

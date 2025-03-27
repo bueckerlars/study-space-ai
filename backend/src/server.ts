@@ -52,7 +52,7 @@ class Server {
     this.app.use('/api/projects', projectRoutes);
     this.app.use('/api/files', fileRoutes);
     this.app.use('/api/sources/', sourceRoutes); 
-    this.app.use('/api/ollama/', ollamaRoutes);
+    this.app.use('/api/ollama', ollamaRoutes);
   }
 
   private setupSwagger(): void {

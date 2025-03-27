@@ -6,24 +6,25 @@ with open("./1029aae8-14d7-4af5-b55b-a582d5c4667c_ocr.txt", "r", encoding="utf-8
 
 api_url = "http://localhost:11434/api/generate"
 
+prompt = "Angesichts der folgenden Themen: Maschinelles Lernen, KI, Deep Learning, Computer Vision, Natürliche Sprachverarbeitung generiere einen beschreibenden Titel auf Deutsch. Der Titel darf maxiaml 200 Zeichen lang sein."
+
 payload = {
-    "model": "deepseek-r1:8b",
+    "model": 'deepseek-r1:8b',
     "options": {
-        "system": "Du bist ein hilfreicher Assistent, der Kerninformationen aus Dokumenten extrahiert.",
+        "system": "You are a creative assistant that generates project titles based on provided themes."
     },
+    "prompt": prompt,
     "stream": False,
-    "prompt": "Extrahiere die Hauptthemen und Kernaussagen aus dem folgenden Text in jeweils 1 bis 3 Wörten und gib sie als JSON Array von Strings zurück.\n\nText: " + text +  "\n\nJSON Array der Themen:",
     "format": {
         "type": "object",
         "properties": {
-            "themes": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                }
-            }
+            "title": {
+                "type": "string"
+            },
         },
-        "required": ["themes"]
+        "required": [
+            "title",
+        ]
     }
 }
 

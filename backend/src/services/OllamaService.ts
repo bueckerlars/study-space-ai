@@ -6,6 +6,7 @@ import { databaseController } from '../controllers/DatabaseController';
 import logger from './logger';
 import axios from 'axios';
 import sourceService from './SourceService';
+import ProjectsService from './ProjectsService';
 
 class OllamaService {
   async summarize(sourceId: string): Promise<{ summary_file_id: string; summary: string }> {
@@ -124,6 +125,51 @@ class OllamaService {
     logger.info(`Summarized source ${sourceId} and created summary file ${summaryFileId}`);
     return { summary_file_id: summaryFileId, summary };
   }
+
+  async generateProjectTitle(projectId: string): Promise<string> {
+    logger.info(`Starting title generation for project: ${projectId}`);
+    const sources = await ProjectsService.getProjectSources(projectId);
+    const themes: string[] = [];
+    sources.forEach(source => {
+      if (source.themes && Array.isArray(source.themes)) {
+        logger.debug(`Source ${source.source_id} has themes: ${source.themes.join(', ')}`);
+        themes.push(...source.themes);
+      }
+    });
+    const uniqueThemes = Array.from(new Set(themes));
+    logger.debug(`Collected themes: ${uniqueThemes.join(', ')}`);
+    const prompt = `Angesichts der folgenden Themen: ${uniqueThemes.join(', ')}, generiere einen prägnanten und beschreibenden Projekttitel auf Deutsch. Der Titel darf maxiaml 128 Zeichen lang sein.`;
+    const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+    logger.info(`Sending prompt to Ollama API for project title generation`);
+    const apiResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
+      model: 'deepseek-r1:8b',
+      options: {
+      system: "You are a creative assistant that generates project titles based on provided themes that are not longer than 128 chars."
+      },
+      prompt: prompt,
+      stream: false,
+      format: {
+      type: "object",
+      properties: {
+        title: {
+          type: "string",
+        },
+      },
+      required: [
+        "title",
+      ]
+    }
+    });
+    const titleResponse = apiResponse.data.response;
+    const parsedTitle = typeof titleResponse === 'string' ? JSON.parse(titleResponse) : titleResponse;
+    logger.debug(`Received project title: ${parsedTitle}`);
+    const title = parsedTitle.title;
+    await ProjectsService.updateProject(projectId, { name: title });
+    logger.info(`Updated project ${projectId} with title: ${title}`);
+    return title;
+  }
+
+
 }
 
 const ollamaService = new OllamaService();

@@ -3,7 +3,7 @@ import ollamaController from '../controllers/OllamaController';
 
 /**
  * @swagger
- * /summarize:
+ * /api/ollama/summarize:
  *   post:
  *     tags:
  *       - Ollama
@@ -43,8 +43,45 @@ import ollamaController from '../controllers/OllamaController';
  *         description: Serverfehler
  */
 
+/**
+ * @swagger
+ * /api/ollama/generate-project-title/{project_id}:
+ *   post:
+ *     tags:
+ *       - Ollama
+ *     summary: Erstelle einen Projekttitel
+ *     description: Erzeugt einen Projekttitel für das Projekt anhand der übergebenen project_id mithilfe der Ollama API.
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - in: path
+ *         name: project_id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Die project_id des Projekts.
+ *     responses:
+ *       200:
+ *         description: Projekttitel erfolgreich erstellt
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             data:
+ *               type: object
+ *               properties:
+ *                 project_title:
+ *                   type: string
+ *       400:
+ *         description: Ungültige Anfrage
+ *       500:
+ *         description: Serverfehler
+ */
+
 const router = Router();
 
 router.post('/summarize/:source_id', ollamaController.summarize);
+router.post('/generate-project-title/:project_id', ollamaController.generateProjectTitle);
 
 export default router;

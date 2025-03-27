@@ -217,8 +217,17 @@ export const processOcrRequest = (authToken: string, sourceId: string) => {
 export const summarizeRequest = (authToken: string, sourceId: string) => {
   return ollamaApi.post(`/summarize/${sourceId}`, {
     headers: {
-      Authorization: `Bearer ${authToken}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${authToken}`
+    },
+    withCredentials: true,
+  });
+};
+
+// New Ollama API function for generating project title
+export const generateProjectTitleRequest = (authToken: string, projectId: string) => {
+  return ollamaApi.post(`/generate-project-title/${projectId}`, {
+    headers: { 
+      Authorization: `Bearer ${authToken}`
     },
     withCredentials: true,
   });
