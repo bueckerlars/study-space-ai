@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { EditIcon, MoreVertical, TrashIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import EditProjectTitleDialog from "./EditProjectTitleDialog";
 
 interface ProjectGaleryCardProps {
     projectId: string;
@@ -18,11 +19,13 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     const [project, setProject] = useState<Project | null>(null);
     const [sources, setSources] = useState<Source[]>([]);
 
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString();
     }
 
-    useEffect(() => {
+    const fetchProject = () => {
         getProjectByIdRequest(authToken!, projectId)
             .then((response) => {
                 const project: Project = response.data;
@@ -31,9 +34,11 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
             })
             .catch((error) => {
                 console.error(error);
-            }
-        );
+            });
+    };
 
+    useEffect(() => {
+        fetchProject();
     }, []);
 
     useEffect(() => {
@@ -73,37 +78,49 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
         });
     }
 
+    const handleDialogOpenChanged = (open: boolean) => {
+        setEditDialogOpen(open);
+    }
+
     return (
-        <Card className="flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
-            <CardHeader className="flex flex-row justify-between items-top">
-                <CardTitle className="pt-2">{project?.name}</CardTitle>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button onClick={handleButtonClick} variant="ghost">
-                            <MoreVertical size={24} />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    {/* Added onClick to prevent propagation */}
-                    <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenuItem>
-                            <EditIcon/> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive" onClick={handleDeleteProject}>
-                            <TrashIcon/> Delete
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </CardHeader>
-            <CardDescription className="h-full">{project?.description}</CardDescription>
-            <CardFooter className="flex flex-row justify-between">
-                <span>
-                    Created at: {formatDate(project?.created_at!)}
-                </span>
-                <span>
-                    {sources.length} Sources
-                </span>
-            </CardFooter>
-        </Card> 
+        <>
+            <Card className="flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
+                <CardHeader className="flex flex-row justify-between items-top">
+                    <CardTitle className="pt-2">{project?.name}</CardTitle>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button onClick={handleButtonClick} variant="ghost">
+                                <MoreVertical size={24} />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        {/* Added onClick to prevent propagation */}
+                        <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+                                <EditIcon/> Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive" onClick={handleDeleteProject}>
+                                <TrashIcon/> Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </CardHeader>
+                <CardDescription className="h-full">{project?.description}</CardDescription>
+                <CardFooter className="flex flex-row justify-between">
+                    <span>
+                        Created at: {formatDate(project?.created_at!)}
+                    </span>
+                    <span>
+                        {sources.length} Sources
+                    </span>
+                </CardFooter>
+            </Card> 
+            <EditProjectTitleDialog 
+                project={project} 
+                open={editDialogOpen} 
+                onOpenChanged={handleDialogOpenChanged} 
+                onProjectUpdated={fetchProject} // new prop for refetching
+            />
+        </>
     );
 }
 

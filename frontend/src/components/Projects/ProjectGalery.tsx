@@ -9,16 +9,21 @@ const ProjectGalery = () => {
     const [projects, setProjects] = useState<Project[]>([]);
 
     useEffect(() => {
-        // fetch all projects
-        getUserProjectsRequest(authToken!)
-            .then((response) => {
-                const projects: Project[] = response.data;
-                setProjects(projects);
-            }
-        )
-        .catch((error) => {
-            console.error(error);
-        });
+        const fetchProjects = () => {
+            getUserProjectsRequest(authToken!)
+                .then((response) => {
+                    const projects: Project[] = response.data;
+                    setProjects(projects);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        };
+
+        fetchProjects();
+        const intervalId = setInterval(fetchProjects, 5000); // fetch projects every 5 seconds
+
+        return () => clearInterval(intervalId);
     }, []);
 
     return (
