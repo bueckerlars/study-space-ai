@@ -16,13 +16,13 @@ import { Source } from "@/types/Source";
 
 interface AddSourcesDialogProps {
     projectId?: string;
+    projectTitle?: string;
 }
 
-const AddSourcesDialog = ({ projectId }: AddSourcesDialogProps) => {
+const AddSourcesDialog = ({ projectId, projectTitle }: AddSourcesDialogProps) => {
     const { authToken, user } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
     const [sourcesInProject, setSourcesInProject] = useState<Source[]>([]);
-    const [sourcesLoaded, setSourcesLoaded] = useState(false);
     const [open, setOpen] = useState(false);
     const [showButtonText, setShowButtonText] = useState(true);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -31,10 +31,10 @@ const AddSourcesDialog = ({ projectId }: AddSourcesDialogProps) => {
 
     // Check if dialog should be opened automatically
     useEffect(() => {
-        if (sourcesLoaded && sourcesInProject.length === 0) {
+        if (projectTitle === "Untitled" || projectTitle === null) {
             setOpen(true);
         }
-    }, [sourcesLoaded, sourcesInProject]);
+    }, [projectTitle]);
 
     useEffect(() => {
         const fetchSources = () => {
@@ -43,10 +43,8 @@ const AddSourcesDialog = ({ projectId }: AddSourcesDialogProps) => {
                 // Filter sources by project ID
                 const projectSources: Source[] = response.data.data;
                 setSourcesInProject(projectSources);
-                setSourcesLoaded(true);
             }).catch((error) => {
                 console.error(error);
-                setSourcesLoaded(true);
             });
         };
         fetchSources();

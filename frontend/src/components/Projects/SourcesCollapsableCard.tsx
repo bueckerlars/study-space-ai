@@ -7,7 +7,7 @@ import SourceDetails from "./source-details";
 import { useState } from "react";
 
 // Updated SourcesContent now uses the hook internally
-const SourcesContent: React.FC<{ projectId: string}> = ({ projectId }) => {
+const SourcesContent: React.FC<{ projectId: string, projectTitle: string}> = ({ projectId, projectTitle }) => {
   const { cardState, setCardState } = useCollapsableCard();
   const [source_id, setSourceId] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ const SourcesContent: React.FC<{ projectId: string}> = ({ projectId }) => {
   return (
     <>
       <div className="w-full flex justify-center ">
-          <AddSourcesDialog projectId={projectId}/>
+          <AddSourcesDialog projectId={projectId} projectTitle={projectTitle}/>
       </div>
       <SourceTable 
          projectId={projectId} 
@@ -44,7 +44,7 @@ const SourcesCollapsableCard: React.FC<{ project: Project }> = ({ project }) => 
             <ConditionalHeader title="Sources" />
             <CollapsableCardSeparator />
             <CollapsableCardContent>
-                <SourcesContent projectId={project.project_id!} />
+                <SourcesContent projectId={project.project_id!} projectTitle={project.name}/>
             </CollapsableCardContent>
         </CollapsableCard>
     );

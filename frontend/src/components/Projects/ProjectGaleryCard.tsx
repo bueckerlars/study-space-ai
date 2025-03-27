@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { deleteProjectRequest, getProjectByIdRequest } from "@/services/ApiService";
+import { deleteProjectRequest, getProjectByIdRequest, getSourcesByProjectRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
-import { Project } from "@/types";
+import { Project, Source } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { EditIcon, MoreVertical, TrashIcon } from "lucide-react";
@@ -16,6 +16,7 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     const { authToken } = useAuth();
     const navigate = useNavigate();
     const [project, setProject] = useState<Project | null>(null);
+    const [sources, setSources] = useState<Source[]>([]);
 
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString();
@@ -34,6 +35,19 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
         );
 
     }, []);
+
+    useEffect(() => {
+        getSourcesByProjectRequest(authToken!, projectId)
+            .then((response) => {
+                const sources: Source[] = response.data.data;
+                console.log("Sources", sources);
+                setSources(sources);
+            }
+        )
+        .catch((error) => {
+            console.error(error);
+        });    
+    }, [project]);
 
     const handleClickOnCard = () => {
         navigate(`/projects/${projectId}`);
@@ -60,9 +74,9 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     }
 
     return (
-        <Card className="px-4 flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
-            <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle>{project?.name}</CardTitle>
+        <Card className="flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
+            <CardHeader className="flex flex-row justify-between items-top">
+                <CardTitle className="pt-2">{project?.name}</CardTitle>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button onClick={handleButtonClick} variant="ghost">
@@ -81,7 +95,14 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
                 </DropdownMenu>
             </CardHeader>
             <CardDescription className="h-full">{project?.description}</CardDescription>
-            <CardFooter className="">Created at: {formatDate(project?.created_at!)}</CardFooter>
+            <CardFooter className="flex flex-row justify-between">
+                <span>
+                    Created at: {formatDate(project?.created_at!)}
+                </span>
+                <span>
+                    {sources.length} Sources
+                </span>
+            </CardFooter>
         </Card> 
     );
 }
