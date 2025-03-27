@@ -1,4 +1,4 @@
-import { BrainCog } from "lucide-react";
+import { BrainCog, ChevronsUpDown } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { getFileContentRequest, getSourceByIdRequest } from "@/services/ApiService";
@@ -6,6 +6,8 @@ import { useAuth } from "@/provider/AuthProvider";
 import { Source } from "@/types";
 import { ScrollArea } from "../ui/scroll-area";
 import ThemeList from "./theme-list";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Button } from "../ui/button";
 
 interface SourceDetailsProps {
     sourceId: string;
@@ -55,24 +57,35 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
     }, [sourceId]);
 
     return (
-        <div className="flex flex-col gap-2">
-            <div className="rounded-lg p-4 bg-accent flex flex-col gap-2">
-                <div className="flex flex-row items-center gap-2">
-                    <BrainCog />
-                    <span className="text-lg">Source summary</span>
-                </div>
-                <Separator />
-                <ScrollArea className="h-80 pr-4">
-                    <div className="flex flex-row gap-4 justfiy-between">
-                        <span className="flex-3">{sourceSummary}</span>
-                        <span className="flex-1">
-                            <ThemeList themes={themes ? themes : []} />
-                        </span>
+        <div className="flex flex-col gap-2 h-full">
+            <Collapsible defaultOpen>
+                <div className="rounded-lg p-4 bg-accent flex flex-col gap-2 flex-shrink-0">
+                    <div className="flex flex-row items-center justify-between">
+                        <div className="flex flex-row items-center gap-2">
+                            <BrainCog />
+                            <span className="text-lg">Source summary</span>
+                        </div>
+                        <CollapsibleTrigger>
+                            <Button variant="ghost">
+                                <ChevronsUpDown/>
+                            </Button>
+                        </CollapsibleTrigger>
                     </div>
-                </ScrollArea>
-            </div>
-            <div className="p-4">
-                <ScrollArea className="h-100">
+                    <CollapsibleContent>
+                        <Separator />   
+                        <ScrollArea className="h-80 pr-4">
+                            <div className="flex flex-row gap-4 justfiy-between mt-4">
+                                <span className="flex-3">{sourceSummary}</span>
+                                <span className="flex-1">
+                                    <ThemeList themes={themes ? themes : []} />
+                                </span>
+                            </div>
+                        </ScrollArea>
+                    </CollapsibleContent>
+                </div>
+            </Collapsible>
+            <div className="flex p-4 flex-grow max-h-200">
+                <ScrollArea>
                     <span>{sourceText}</span>
                 </ScrollArea>
             </div>
