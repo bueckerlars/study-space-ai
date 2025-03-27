@@ -213,7 +213,7 @@ export const processOcrRequest = (authToken: string, sourceId: string) => {
   });
 };
 
-// New Ollama API function
+// Ollama API functions
 export const summarizeRequest = (authToken: string, sourceId: string) => {
   return ollamaApi.post(`/summarize/${sourceId}`, {
     headers: {
@@ -223,12 +223,17 @@ export const summarizeRequest = (authToken: string, sourceId: string) => {
   });
 };
 
-// New Ollama API function for generating project title
 export const generateProjectTitleRequest = (authToken: string, projectId: string) => {
   return ollamaApi.post(`/generate-project-title/${projectId}`, {
     headers: { 
       Authorization: `Bearer ${authToken}`
     },
     withCredentials: true,
+  });
+};
+
+export const getModelsRequest = (authToken: string) => {
+  return ollamaApi.get('/models', {
+    headers: { Authorization: `Bearer ${authToken}` },
   });
 };

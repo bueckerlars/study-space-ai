@@ -1,18 +1,19 @@
 import { Project } from "@/types";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardFooter, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { SendHorizonal } from "lucide-react";
+import ModelSelect from "../model-select";
 
 //@ts-ignore
 const ChatCard: React.FC<{project: Project}> = ({ project }) => {
-
     return (
         <Card className='flex-col w-full h-full min-h-0 flex-2'>
-            <CardHeader className="justify-between flex-row items-center">
-            <CardTitle>Chat</CardTitle>
-            </CardHeader>
+            <div className="justify-between flex flex-row items-center px-6">
+                <CardTitle>Chat</CardTitle>
+                <ModelSelect/>
+            </div>
             <Separator />
             <CardContent className="flex-1">
             <div className="flex flex-col gap-2 h-full justify-center items-center text-gray-400">
@@ -20,10 +21,10 @@ const ChatCard: React.FC<{project: Project}> = ({ project }) => {
             </div>
             </CardContent>
             <CardFooter>
-            <Card className="w-full flex flex-row p-2">
-                <Input placeholder='Add Source to begin a chat' className='flex-95'/>
-                <Button className='flex-5 rounded-full'><SendHorizonal size={15} /></Button>
-            </Card>
+                <div className="flex flex-row gap-2 w-full border border-gray-800 rounded-lg p-2">
+                    <Input placeholder='Add Source to begin a chat'/>
+                    <Button><SendHorizonal/></Button>
+                </div>
             </CardFooter>
         </Card>
     );
