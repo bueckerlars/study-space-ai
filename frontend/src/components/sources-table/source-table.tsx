@@ -25,7 +25,7 @@ const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handl
 
     return (
         <div className="flex flex-col mt-6">
-            {!isCollapsed && (<div className="flex flex-row justify-between items-center px-4">
+            {!isCollapsed && (<div className="flex flex-row justify-between items-center px-4 mb-2">
                 <div>Select sources:</div>
                 <Checkbox />
             </div>)}
