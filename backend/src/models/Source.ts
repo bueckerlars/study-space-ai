@@ -14,6 +14,9 @@ class Source extends Model<SourceType, SourceCreationAttributes> implements Sour
   public updated_at!: Date;
   public themes?: string[];
 
+  // Neue Eigenschaft für Text-Embedding
+  public text_embedding?: number[];
+
   // Associations
   static associate(models: any) {
     // Associate with Project
@@ -82,6 +85,10 @@ export default (sequelize: Sequelize) => {
       },
       themes: {
         type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+      },
+      text_embedding: {
+        type: DataTypes.ARRAY(DataTypes.FLOAT),
         allowNull: true,
       },
       created_at: {

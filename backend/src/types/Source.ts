@@ -8,4 +8,5 @@ export interface Source {
     text_file_id?: string;
     summary_file_id?: string;
     themes?: string[];
+    text_embedding?: number[];
 }

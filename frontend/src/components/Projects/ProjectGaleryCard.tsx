@@ -84,7 +84,7 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
 
     return (
         <>
-            <Card className="flex flex-col hover:cursor-pointer" onClick={handleClickOnCard}>    
+            <Card className="flex flex-col hover:cursor-pointer min-h-60" onClick={handleClickOnCard}>    
                 <CardHeader className="flex flex-row justify-between items-top">
                     <CardTitle className="pt-2">{project?.name}</CardTitle>
                     <DropdownMenu>
@@ -104,7 +104,7 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </CardHeader>
-                <CardDescription className="h-full">{project?.description}</CardDescription>
+                <CardDescription className="h-full"></CardDescription>
                 <CardFooter className="flex flex-row justify-between">
                     <span>
                         Created at: {formatDate(project?.created_at!)}

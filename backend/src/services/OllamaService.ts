@@ -27,7 +27,7 @@ class OllamaService {
       throw new Error(`Source already summarized or summarizing: ${sourceId}`);
     }
   
-    // Upadte source status to "summarizing"
+    // Update source status to "summarizing"
     await sourceService.updateSourceStatus(sourceId, 'summarizing');
     logger.info(`Updated source ${sourceId} status to "summarizing"`);
     
@@ -120,6 +120,25 @@ class OllamaService {
       logger.error(`No themes found in summary for source id: ${sourceId}`);
       throw new Error(`No themes found in summary for source id: ${sourceId}`);
     }
+
+    // Generate embeddings using Nomic API
+    logger.info(`Generating embeddings for source: ${sourceId}`);
+    const embeddingResponse = await axios.post(`${ollamaApiUrl}/api/embed`, {
+      model: 'nomic-embed-text',
+      input: textContent,
+    });
+
+    // Extract embeddings array from the response
+    const embeddings = embeddingResponse.data.embeddings[0];
+    if (!embeddings || !Array.isArray(embeddings)) {
+      logger.error(`Failed to extract embeddings for source: ${sourceId}`);
+      throw new Error(`Failed to extract embeddings for source: ${sourceId}`);
+    }
+    logger.debug(`Received embeddings for source: ${sourceId}`);
+
+    // Update source with embeddings
+    await sourceService.updateSource(sourceId, { text_embedding: embeddings });
+    logger.info(`Updated source ${sourceId} with embeddings`);
     
     // Update source with summary file id and status "summarized"
     await sourceService.updateSource(sourceId, { summary_file_id: summaryFileId, themes: themes, status: 'summarized' });
