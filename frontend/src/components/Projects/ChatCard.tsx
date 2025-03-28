@@ -8,7 +8,6 @@ import ModelSelect from "../model-select";
 import { useEffect, useState } from "react";
 import { getSourcesByProjectRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
-import ProjectSummary from "./ProjectSummery";
 import ChatScrollBox from "./chat/chat-scroll-area";
 
 //@ts-ignore

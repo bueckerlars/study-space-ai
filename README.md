@@ -2,7 +2,7 @@
 
 ## Overview
 
-StudySpace.AI is a SaaS platform designed to help students plan and manage their studies effectively. It offers features like PDF OCR, PDF merging/splitting, planning tools for modules, projects, deadlines, and tasks (with AI assistance), learning plan creation, and a Pomodoro timer for focused work sessions.
+StudySpace.AI is a SaaS platform designed to help students process and manage their documents effectively using AI. It offers features like PDF OCR, AI-powered project summarization, title generation, and theme extraction from documents. Planning tools for modules, projects, deadlines, and tasks will be implemented in the future.
 
 ## Tech Stack
 
@@ -25,7 +25,13 @@ StudySpace.AI is a SaaS platform designed to help students plan and manage their
 
 - User Authentication (JWT)
 - PDF OCR
-- PDF Merging / Splitting
+- AI-Powered Features:
+    - Project Summarization
+    - Project Title Generation
+    - Theme Extraction from Documents
+
+## Future Features
+
 - Planning:
     - Modules
     - Projects
