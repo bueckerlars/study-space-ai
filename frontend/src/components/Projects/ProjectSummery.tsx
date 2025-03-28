@@ -3,6 +3,8 @@ import { useAuth } from "@/provider/AuthProvider";
 import { generateProjectSummaryRequest, getProjectByIdRequest } from "@/services/ApiService";
 import { useEffect, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
+import { Copy, Pin } from "lucide-react";
 
 type ProjectSummaryProps = {
     projectId: string;
@@ -37,6 +39,10 @@ const ProjectSummary = ({ projectId } : ProjectSummaryProps) => {
         }
     }, [projectDescription, projectTitle]);
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(projectDescription!);
+    };
+
     return (
         <div>
             {loading && (
@@ -51,9 +57,20 @@ const ProjectSummary = ({ projectId } : ProjectSummaryProps) => {
                 </div>
             )}
             {!loading && (
-                <div className="font-gray-400 gap-3 flex flex-col">
+                <div className="gap-3 flex flex-col">
                     <p className="text-lg font-bold text-gray-300">{projectTitle}</p>
-                    <div className="text-sm"><ReactMarkdown>{projectDescription}</ReactMarkdown></div>
+                    <div className="text-sm font-gray-400"><ReactMarkdown>{projectDescription}</ReactMarkdown></div>
+                    <div className="flex flex-row gap-2">
+                        <Button variant={"outline"}>
+                            <Pin />
+                            Save to Note
+                        </Button>
+                        <Button 
+                            onClick={copyToClipboard} 
+                            variant={"ghost"}>
+                            <Copy />
+                        </Button>
+                    </div>
                 </div>
             )}
         </div>

@@ -139,11 +139,68 @@ import ollamaController from '../controllers/OllamaController';
  *         description: Serverfehler
  */
 
+/**
+ * @swagger
+ * /api/ollama/chat:
+ *   post:
+ *     tags:
+ *       - Ollama
+ *     summary: Chatten mit der Ollama API
+ *     description: Sendet eine Chat-Anfrage an die Ollama API und gibt die Antwort zurück.
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: chat
+ *         description: Ein Array von Chat-Objekten, die gesendet werden sollen.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             messages:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   role:
+ *                     type: string
+ *                     description: Die Rolle des Senders (z. B. "assistant" oder "user").
+ *                     example: "user"
+ *                   content:
+ *                     type: string
+ *                     description: Der Inhalt der Nachricht.
+ *                     example: "Hallo, wie kann ich dir helfen?"
+ *     responses:
+ *       200:
+ *         description: Erfolgreiche Chat-Antwort
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             data:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   role:
+ *                     type: string
+ *                     description: Die Rolle des Senders (z. B. "assistant" oder "user").
+ *                   content:
+ *                     type: string
+ *                     description: Der Inhalt der Antwort.
+ *       400:
+ *         description: Ungültige Anfrage
+ *       500:
+ *         description: Serverfehler
+ */
+
 const router = Router();
 
 router.post('/summarize/:source_id', ollamaController.summarize);
 router.post('/generate-project-title/:project_id', ollamaController.generateProjectTitle);
 router.get('/models', ollamaController.getModels);
 router.post('/summarize-project/:project_id', ollamaController.summarizeProject);
+router.post('/chat', ollamaController.chat);
 
 export default router;

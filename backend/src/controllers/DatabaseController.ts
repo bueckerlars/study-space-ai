@@ -333,6 +333,59 @@ export class DatabaseController {
     await this.updateSource({ text_file_id: ocr_file_id }, { source_id });
     return await this.findSourceById(source_id);
   }
+
+  /**
+   * Find relevant sources based on embeddings
+   */
+  public async findRelevantSources(embeddings: number[], sources: Source[]): Promise<Source[]> {
+    logger.info('Finding relevant sources based on embeddings');
+
+    try {
+      const relevantSources: Source[] = [];
+
+      for (const source of sources) {
+        if (source.text_embedding) {
+          const similarity = this.calculateCosineSimilarity(embeddings, source.text_embedding);
+          if (similarity > 0.8) { // Threshold for relevance
+            relevantSources.push(source);
+          }
+        }
+      }
+
+      logger.debug(`Found ${relevantSources.length} relevant sources`);
+      return relevantSources;
+    } catch (error) {
+      logger.error(`Error finding relevant sources: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
+  }
+
+  private calculateCosineSimilarity(vecA: number[], vecB: number[]): number {
+    const dotProduct = vecA.reduce((sum, a, idx) => sum + a * vecB[idx], 0);
+    const magnitudeA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+    const magnitudeB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+
+    if (magnitudeA === 0 || magnitudeB === 0) {
+      return 0;
+    }
+
+    return dotProduct / (magnitudeA * magnitudeB);
+  }
+
+  /**
+   * Read file content from a given path
+   */
+  public async readFileContent(filePath: string): Promise<string> {
+    const fs = require('fs').promises;
+    try {
+      logger.info(`Reading file content from: ${filePath}`);
+      const content = await fs.readFile(filePath, 'utf8');
+      return content;
+    } catch (error) {
+      logger.error(`Error reading file content: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
+  }
 }
 
 // Register models with database service

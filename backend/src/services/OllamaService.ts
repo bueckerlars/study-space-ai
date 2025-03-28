@@ -260,6 +260,51 @@ Jeder Text beginnt mit einer Zeile "Text X:" (wobei X die laufende Nummer ist), 
     }
   }
 
+  async chat(messages: { role: string; content: string }[]): Promise<{ role: string; content: string }[]> {
+    logger.info('Sending chat messages to Ollama API');
+
+    const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+    try {
+      const response = await axios.post(`${ollamaApiUrl}/api/chat`, {
+        model: 'llama3.2',
+        options: {
+          system: "Du bist ein hilfreicher Assistent, der präzise und informative Antworten liefert."
+        },
+        messages,
+        stream: false
+      });
+
+      const chatResponses = response.data.messages;
+      logger.debug(`Received chat responses: ${JSON.stringify(chatResponses).substring(0, 50)}...`);
+      return chatResponses;
+    } catch (error) {
+      logger.error(`Error in chat with Ollama API: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error('Failed to process chat request');
+    }
+  }
+
+  async generateEmbeddings(text: string): Promise<number[]> {
+    logger.info('Generating embeddings for text');
+
+    const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
+    try {
+      const response = await axios.post(`${ollamaApiUrl}/api/embed`, {
+        model: 'nomic-embed-text',
+        input: text
+      });
+
+      const embeddings = response.data.embeddings[0];
+      if (!embeddings || !Array.isArray(embeddings)) {
+        throw new Error('Failed to generate embeddings');
+      }
+
+      logger.debug(`Generated embeddings: ${embeddings.slice(0, 5)}...`);
+      return embeddings;
+    } catch (error) {
+      logger.error(`Error generating embeddings: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error('Failed to generate embeddings');
+    }
+  }
 }
 
 const ollamaService = new OllamaService();
