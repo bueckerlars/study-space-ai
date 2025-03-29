@@ -1,5 +1,22 @@
 # StudySpace.AI
 
+## Table of Contents
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
+- [Features](#features)
+- [Future Features](#future-features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Deployment Documentation](docs/deployment.md)
+- [Environment Variables Documentation](docs/enviroment.md)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Overview
 
 StudySpace.AI is a SaaS platform designed to help students process and manage their documents effectively using AI. It offers features like PDF OCR, AI-powered project summarization, title generation, and theme extraction from documents. Planning tools for modules, projects, deadlines, and tasks will be implemented in the future.
@@ -123,10 +140,12 @@ The frontend application should now be running at `http://localhost:<frontend_po
 
 The backend API documentation will be available at `/api-docs` endpoint once the backend server is running (e.g., `http://localhost:<backend_port>/api-docs`).
 
+For detailed API documentation, refer to the [API Documentation](docs/api.md).
+
 ## Contributing
 
 [Optional: Add information about how others can contribute to your project.]
 
 ## License
 
-[Optional: Add license information.]
+This project is licensed under the terms of the [LICENSE](LICENSE) file.
