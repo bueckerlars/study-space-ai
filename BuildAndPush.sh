@@ -10,8 +10,54 @@ set -e
 # Bitte durch Ihren Docker Hub Benutzernamen ersetzen
 DOCKER_USERNAME="larsbuecker"
 
-# Tag/Version für Images
-VERSION=$(date +"%Y%m%d%H%M")
+# Optionen verarbeiten
+VERSION=""
+SERVICE=""
+
+# Hilfe-Funktion
+show_help() {
+  echo "Verwendung: ./BuildAndPush.sh <service-name> [OPTIONEN]"
+  echo ""
+  echo "Verfügbare Services:"
+  echo "  frontend      - Baut und pusht nur den Frontend-Container"
+  echo "  backend       - Baut und pusht nur den Backend-Container"
+  echo "  ocr-service   - Baut und pusht nur den OCR-Service-Container"
+  echo ""
+  echo "Optionen:"
+  echo "  -v, --version VERSION  Manuelle Versionsnummer anstatt Zeitstempel"
+  echo "  -h, --help             Diese Hilfe anzeigen"
+  echo ""
+  echo "Beispiel: ./BuildAndPush.sh frontend --version v1.0.0"
+}
+
+# Prüfen, ob mindestens ein Parameter übergeben wurde
+if [ $# -eq 0 ]; then
+  echo "❌ Fehler: Kein Service angegeben."
+  show_help
+  exit 1
+fi
+
+# Den ersten Parameter als Service speichern
+SERVICE=$1
+shift
+
+# Weitere Parameter verarbeiten
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    -v|--version) VERSION="$2"; shift ;;
+    -h|--help) show_help; exit 0 ;;
+    *) echo "Unbekannte Option: $1"; show_help; exit 1 ;;
+  esac
+  shift
+done
+
+# Tag/Version für Images, falls nicht manuell gesetzt
+if [ -z "$VERSION" ]; then
+  VERSION=$(date +"%Y%m%d%H%M")
+  echo "Keine Version angegeben. Verwende Zeitstempel: $VERSION"
+else
+  echo "Verwende manuelle Version: $VERSION"
+fi
 
 # Funktion zum Bauen und Pushen eines Images
 build_and_push() {
@@ -34,28 +80,6 @@ build_and_push() {
   echo "✅ ${service_name} image erfolgreich gebaut und gepusht!"
   echo ""
 }
-
-# Hilfe-Funktion
-show_help() {
-  echo "Verwendung: ./BuildAndPush.sh <service-name>"
-  echo ""
-  echo "Verfügbare Services:"
-  echo "  frontend      - Baut und pusht nur den Frontend-Container"
-  echo "  backend       - Baut und pusht nur den Backend-Container"
-  echo "  ocr-service   - Baut und pusht nur den OCR-Service-Container"
-  echo ""
-  echo "Beispiel: ./BuildAndPush.sh frontend"
-}
-
-# Prüfen, ob ein Parameter übergeben wurde
-if [ $# -eq 0 ]; then
-  echo "❌ Fehler: Kein Service angegeben."
-  show_help
-  exit 1
-fi
-
-# Den übergebenen Service verarbeiten
-SERVICE=$1
 
 # Einloggen bei Docker Hub
 echo "🔐 Bei Docker Hub einloggen..."

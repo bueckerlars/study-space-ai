@@ -10,8 +10,37 @@ set -e
 # Bitte durch Ihren Docker Hub Benutzernamen ersetzen
 DOCKER_USERNAME="larsbuecker"
 
-# Tag/Version für Images
-VERSION=$(date +"%Y%m%d%H%M")
+# Optionen verarbeiten
+VERSION=""
+
+# Hilfe-Funktion
+show_help() {
+  echo "Verwendung: ./BuildAndPushAll.sh [OPTIONEN]"
+  echo ""
+  echo "Optionen:"
+  echo "  -v, --version VERSION  Manuelle Versionsnummer anstatt Zeitstempel"
+  echo "  -h, --help             Diese Hilfe anzeigen"
+  echo ""
+  echo "Beispiel: ./BuildAndPushAll.sh --version v1.0.0"
+}
+
+# Parameter verarbeiten
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    -v|--version) VERSION="$2"; shift ;;
+    -h|--help) show_help; exit 0 ;;
+    *) echo "Unbekannte Option: $1"; show_help; exit 1 ;;
+  esac
+  shift
+done
+
+# Tag/Version für Images, falls nicht manuell gesetzt
+if [ -z "$VERSION" ]; then
+  VERSION=$(date +"%Y%m%d%H%M")
+  echo "Keine Version angegeben. Verwende Zeitstempel: $VERSION"
+else
+  echo "Verwende manuelle Version: $VERSION"
+fi
 
 # Funktion zum Bauen und Pushen eines Images
 build_and_push() {
