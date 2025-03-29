@@ -6,6 +6,7 @@ import { Checkbox } from "../ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { deleteSourceRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
+import { useSource } from "@/provider/SourceProvider";
 
 interface SourceTableEntryProps {
     fileName: string;
@@ -21,9 +22,11 @@ const SourceTableEntry: React.FC<SourceTableEntryProps> = ({ fileName, sourceId,
     const { authToken } = useAuth();
     const [isHovered, setIsHovered] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const { refetchCallback } = useSource();
 
     const handleRemove = () => {
         deleteSourceRequest(authToken!, sourceId);
+        refetchCallback();
     };
 
     if (isCollapsed) {

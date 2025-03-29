@@ -1,9 +1,7 @@
+import useSourceDetails from "@/hooks/useSourceDetails";
+import { useEffect } from "react";
 import { BrainCog, ChevronsUpDown } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { useEffect, useState } from "react";
-import { getFileContentRequest, getSourceByIdRequest } from "@/services/ApiService";
-import { useAuth } from "@/provider/AuthProvider";
-import { Source } from "@/types";
 import { ScrollArea } from "../ui/scroll-area";
 import ThemeList from "./theme-list";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
@@ -15,47 +13,14 @@ interface SourceDetailsProps {
 }
 
 const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
-    const { authToken } = useAuth();
-    const [themes, setThemes] = useState<string[]>();
-    const [sourceSummary, setSourceSummary] = useState<string>();
-    const [sourceText, setSourceText] = useState<string>();
+    const { summary, text, themes, loading, error, fetchSourceDetails } = useSourceDetails();
 
     useEffect(() => {
-        console.log("Source ID", sourceId); 
-        getSourceByIdRequest(authToken!, sourceId)
-            .then((response) => {
-                console.log("Source Response", response);
-                const source: Source = response.data.data;
-                console.log("Source", source);
-                const jsonArray = source.themes;
-                const stringArray: string[] = Array.isArray(jsonArray) 
-                    ? jsonArray.filter((item): item is string => typeof item === "string") 
-                    : [];
-                console.log("Themes", stringArray);
-                setThemes(stringArray);
-
-                getFileContentRequest(authToken!, source.text_file_id!)
-                .then((response) => {
-                    console.log("Source Text", response);
-                    setSourceText(response.data.content);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-
-                getFileContentRequest(authToken!, source.summary_file_id!)
-                .then((response) => {
-                    console.log("Source Summary", response);
-                    setSourceSummary(response.data.content);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        fetchSourceDetails(sourceId);
     }, [sourceId]);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="flex flex-col gap-2">
@@ -76,9 +41,9 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
                         <Separator />   
                         <ScrollArea className="h-80 pr-4">
                             <div className="flex flex-row gap-4 justfiy-between mt-4">
-                                <span className="flex-3"><ReactMarkdown>{sourceSummary}</ReactMarkdown></span>
+                                <span className="flex-3"><ReactMarkdown>{summary}</ReactMarkdown></span>
                                 <span className="flex-1">
-                                    <ThemeList themes={themes ? themes : []} />
+                                    <ThemeList themes={themes} />
                                 </span>
                             </div>
                         </ScrollArea>
@@ -87,7 +52,7 @@ const SourceDetails: React.FC<SourceDetailsProps> = ({ sourceId }) => {
             </Collapsible>
             <div className="flex p-4 h-110">
                 <ScrollArea>
-                    <span>{sourceText}</span>
+                    <span>{text}</span>
                 </ScrollArea>
             </div>
         </div>

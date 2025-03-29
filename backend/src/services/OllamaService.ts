@@ -60,7 +60,8 @@ class OllamaService {
       * **Zielgruppe:** [Optional: Hier eine Zielgruppe angeben, z.B. "für ein technisches Publikum", "für ein allgemeines Publikum"].
       * **Schlüsselwörter:** [Optional: Bitte liste auch die wichtigsten Schlüsselwörter auf, die im Dokument vorkommen].
       \n
-      Beginne die Zusammenfassung mit einem einleitenden Satz, der das Hauptthema des Dokuments zusammenfasst.`
+      Beginne die Zusammenfassung mit einem einleitenden Satz, der das Hauptthema des Dokuments zusammenfasst.
+      Formatiere die Zusammenfassung in Absätze, um die Lesbarkeit zu verbessern und nutze dazu Markdown Formatierungen.`
     const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
     const apiResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
       model: 'llama3.2',

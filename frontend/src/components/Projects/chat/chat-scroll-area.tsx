@@ -13,13 +13,10 @@ export interface ChatScrollBoxRef {
   addMessage: (newMessage: ChatMessage) => void;
 }
 
-interface ChatScrollBoxProps {
-  projectId: string;
-}
+interface ChatScrollBoxProps {}
 
-const ChatScrollBox = forwardRef<ChatScrollBoxRef, ChatScrollBoxProps>(({ projectId }, ref) => {
+const ChatScrollBox = forwardRef<ChatScrollBoxRef, ChatScrollBoxProps>((_, ref) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-
   const addMessage = (newMessage: ChatMessage) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
@@ -30,7 +27,7 @@ const ChatScrollBox = forwardRef<ChatScrollBoxRef, ChatScrollBoxProps>(({ projec
 
   return (
     <ScrollArea className="h-full w-full p-4">
-      <ProjectSummary projectId={projectId} />
+      <ProjectSummary  />
       <div className="flex flex-col gap-4">
         {messages.map((msg) => (
           <ChatMessage key={msg.id} role={msg.role} message={msg.message} />

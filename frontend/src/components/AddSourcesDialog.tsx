@@ -9,20 +9,19 @@ import {
     createSourceRequest, 
     uploadFileRequest,
     updateSourceRequest,
-    getSourcesByProjectRequest
 } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
-import { Source } from "@/types/Source";
+import { useSource } from "@/provider/SourceProvider";
 
 interface AddSourcesDialogProps {
     projectId?: string;
     projectTitle?: string;
 }
 
-const AddSourcesDialog = ({ projectId, projectTitle }: AddSourcesDialogProps) => {
+const AddSourcesDialog = ({ projectId }: AddSourcesDialogProps) => {
     const { authToken, user } = useAuth();
     const [files, setFiles] = useState<File[]>([]);
-    const [sourcesInProject, setSourcesInProject] = useState<Source[]>([]);
+    const { sources, loading, refetchCallback } = useSource();
     const [open, setOpen] = useState(false);
     const [showButtonText, setShowButtonText] = useState(true);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -31,28 +30,14 @@ const AddSourcesDialog = ({ projectId, projectTitle }: AddSourcesDialogProps) =>
 
     // Check if dialog should be opened automatically
     useEffect(() => {
-        if (projectTitle === "Untitled" || projectTitle === null) {
+        if (!loading && sources.length === 0) {
             setOpen(true);
         }
-    }, [projectTitle]);
+    }, [loading]);
 
     useEffect(() => {
-        const fetchSources = () => {
-            if (!authToken || !projectId) return;
-            getSourcesByProjectRequest(authToken, projectId).then((response) => {
-                // Filter sources by project ID
-                const projectSources: Source[] = response.data.data;
-                setSourcesInProject(projectSources);
-            }).catch((error) => {
-                console.error(error);
-            });
-        };
-        fetchSources();
-    }, [open, authToken, projectId]);
-
-    useEffect(() => {
-        setCombinedFileCount(files?.length + sourcesInProject?.length);
-    }, [sourcesInProject, files]);
+        setCombinedFileCount(files?.length + sources?.length);
+    }, [sources, files]);
 
     // Check button width on mount and resize
     useEffect(() => {
@@ -143,6 +128,8 @@ const AddSourcesDialog = ({ projectId, projectTitle }: AddSourcesDialogProps) =>
                 // 3. Update the source with the file ID and status
                 await updateSourceRequest(authToken, sourceId, { source_id: sourceId, source_file_id: fileId, status: 'uploaded' });
             }
+
+            refetchCallback();
             
             // Clear files and close dialog
             setFiles([]);

@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import useSourcesData from "@/hooks/useSourcesData";
+import React, { useEffect, useState } from 'react';
 import SourceTableEntry from "./source-table-entry";
 import { Checkbox } from "../ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { useSource } from '@/provider/SourceProvider';
 
 interface SourceTableProps {
-    projectId: string;
     isCollapsed?: boolean;
     handleOnEntryClicked: (source_id: string) => void;
 }
 
-const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handleOnEntryClicked }) => {
+const SourceTable: React.FC<SourceTableProps> = ({ isCollapsed, handleOnEntryClicked }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    // Prevent refetching when a dropdown is open.
-    const { files, sources } = useSourcesData(projectId, { enabled: !dropdownOpen });
+    const { sourceFiles: files, sources, setEnabled } = useSource();
+
+    useEffect(() => {
+        setEnabled(!dropdownOpen);
+    }, [dropdownOpen]);
 
     const checkIsLoading = (sourceId: string) => {
         const source = sources.find((source) => source.source_id === sourceId);
@@ -34,19 +36,19 @@ const SourceTable: React.FC<SourceTableProps> = ({ projectId, isCollapsed, handl
                     <TooltipTrigger asChild>
                         <div>
                             <SourceTableEntry 
-                                key={file.file_id} 
-                                sourceId={file.sourceId}
-                                fileName={file.name} 
-                                fileType={file.type} 
+                                key={file.file.file_id} 
+                                sourceId={file.source_id}
+                                fileName={file.file.name} 
+                                fileType={file.file.type} 
                                 onDropdownOpenChange={setDropdownOpen} 
                                 isCollapsed={isCollapsed!}
                                 handleOnClick={handleOnEntryClicked}
-                                isLoading={checkIsLoading(file.sourceId)}
+                                isLoading={checkIsLoading(file.source_id)}
                             />
                         </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                        {file.name}
+                        {file.file.name}
                     </TooltipContent>
                 </Tooltip>
             ))}

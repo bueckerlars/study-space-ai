@@ -5,3 +5,4 @@ export * from './Task';
 export * from './PomodoroSession';
 export * from './File';
 export * from './Source';
+export * from './FileWithSource';

@@ -7,12 +7,12 @@ import SourceDetails from "./source-details";
 import { useState } from "react";
 
 // Updated SourcesContent now uses the hook internally
-const SourcesContent: React.FC<{ projectId: string, projectTitle: string}> = ({ projectId, projectTitle }) => {
+const SourcesContent: React.FC<{ projectId: string, projectTitle: string}> = ({ projectId }) => {
   const { cardState, setCardState } = useCollapsableCard();
   const [source_id, setSourceId] = useState<string | null>(null);
 
   const handleSourceTableEntryClicked = (source_id: string) => {
-    setCardState("extended"); // switches to Extended mode
+    setCardState("extended");
     setSourceId(source_id);
     console.log(`Source with ID ${source_id} clicked`);
   };
@@ -24,10 +24,9 @@ const SourcesContent: React.FC<{ projectId: string, projectTitle: string}> = ({ 
   return (
     <>
       <div className="w-full flex justify-center ">
-          <AddSourcesDialog projectId={projectId} projectTitle={projectTitle}/>
+          <AddSourcesDialog projectId={projectId}/>
       </div>
       <SourceTable 
-         projectId={projectId} 
          isCollapsed={cardState === "collapsed"} 
          handleOnEntryClicked={handleSourceTableEntryClicked}
       />

@@ -29,7 +29,6 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
         getProjectByIdRequest(authToken!, projectId)
             .then((response) => {
                 const project: Project = response.data;
-                console.log(project);
                 setProject(project);
             })
             .catch((error) => {
@@ -45,7 +44,6 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
         getSourcesByProjectRequest(authToken!, projectId)
             .then((response) => {
                 const sources: Source[] = response.data.data;
-                console.log("Sources", sources);
                 setSources(sources);
             }
         )

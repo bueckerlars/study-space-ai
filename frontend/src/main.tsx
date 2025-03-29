@@ -12,6 +12,7 @@ import AppLayout from './components/AppLayout.tsx'
 import { ProjectsPage } from './pages/ProjectsPage.tsx'
 import ProjectPage from './pages/ProjectPage.tsx'
 import { ThemeProvider } from './provider/ThemeProvider.tsx'
+import { ProjectProvider } from './provider/ProjectProvider.tsx'
 
 const router = createBrowserRouter([
   {
@@ -62,7 +63,9 @@ const router = createBrowserRouter([
         path: 'projects/:projectId',
         element: (
           <ProtectedRoute>
+            <ProjectProvider>
               <ProjectPage />
+            </ProjectProvider>
           </ProtectedRoute>
         ),
       },

@@ -3,6 +3,8 @@ import sourceService from '../services/SourceService';
 import logger from '../services/logger';
 import fileController from './FileController';
 import ocrController from './OcrController';
+import ollamaService from '../services/OllamaService';
+import ocrService from '../services/OcrService';
 
 class SourceController {
   /**
@@ -70,7 +72,16 @@ class SourceController {
         });
         return;
       }
-      
+
+      // Check status of source and start ocr / summary if needed
+      if (source.status === 'uploaded') {
+        ocrService.processOcr(source.source_id);
+      }
+
+      if (source.status === "processed") {
+        ollamaService.summarize(source.source_id);
+      }
+
       res.status(200).json({
         success: true,
         data: source
@@ -119,6 +130,16 @@ class SourceController {
       const projectId = req.params.projectId;
       logger.info(`Fetching sources by project id: ${projectId}`);
       const sources = await sourceService.getSourcesByProject(projectId);
+
+      let sourcesSummarized = true;
+      sources.forEach(source => {
+        if (source.status !== 'summarized') {
+          sourcesSummarized = false;
+          return;
+        }
+        ollamaService.summarizeProject(projectId);
+        ollamaService.generateProjectTitle(projectId);
+      });
       
       res.status(200).json({
         success: true,
