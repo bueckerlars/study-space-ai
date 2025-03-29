@@ -28,14 +28,23 @@ class Server {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser()); // Add cookie parser middleware
 
+    // Default CORS origins
+    const defaultOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000', 'http://localhost:5066'];
+    
+    // Get CORS origins from environment variable if available
+    const corsOrigins = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',')
+      : defaultOrigins;
+    
     this.app.use(cors({
-      // origin: '*', // Allow all origins
-      origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000', 'http://localhost:5066'], // Fixed format
+      origin: corsOrigins,
       credentials: true, // Required for cookies to be sent
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       optionsSuccessStatus: 204
     }));
+    
+    logger.info(`CORS configured with origins: ${corsOrigins}`);
   }
 
   private configureRoutes(): void {

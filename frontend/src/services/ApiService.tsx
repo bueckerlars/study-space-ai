@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { Source } from '../types/Source';
 
-// Base API URLs
-const API_BASE_URL = 'http://localhost:5066';
+// Base API URL from environment variable or fallback to default
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5066/api';
 
 // Auth API instance
 const authApi = axios.create({
-  // baseURL: 'http://study-space-ai-backend-1:5066',
-  baseURL: `${API_BASE_URL}/api/auth`,
+  baseURL: `${API_BASE_URL}/auth`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,7 +15,7 @@ const authApi = axios.create({
 
 // Project API instance
 const projectApi = axios.create({
-  baseURL: `${API_BASE_URL}/api/projects`,
+  baseURL: `${API_BASE_URL}/projects`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -25,21 +24,22 @@ const projectApi = axios.create({
 
 // File API instance
 const fileApi = axios.create({
-  baseURL: `${API_BASE_URL}/api/files`,
+  baseURL: `${API_BASE_URL}/files`,
   withCredentials: true,
 });
 
 // Source API instance
 const sourceApi = axios.create({
-  baseURL: `${API_BASE_URL}/api/sources`,
+  baseURL: `${API_BASE_URL}/sources`,
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
 });
 
+// Ollama API instance
 const ollamaApi = axios.create({
-  baseURL: `${API_BASE_URL}/api/ollama`,
+  baseURL: `${API_BASE_URL}/ollama`,
   headers: {
     'Content-Type': 'application/json',
   },

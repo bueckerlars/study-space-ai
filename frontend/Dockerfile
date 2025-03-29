@@ -1,43 +1,32 @@
-# # Stage 1: Build the React app
-# FROM node:14-alpine AS build
-
-# WORKDIR /app
-
-# COPY package.json ./
-# COPY package-lock.json ./
-# RUN npm install
-
-# COPY . ./
-# RUN npm run build
-
-# # Stage 2: Serve the app with nginx
-# FROM nginx:alpine
-
-# COPY --from=build /app/dist /usr/share/nginx/html
-
-# # Add nginx configuration
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# EXPOSE 80
-
-# CMD ["nginx", "-g", "daemon off;"]
-
-FROM node:18
+# Stage 1: Build the React app
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
+# Define build arguments
+ARG VITE_API_URL
+# Make build arg available as environment variable during build
+ENV VITE_API_URL=$VITE_API_URL
+
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# RUN apk add --no-cache nodejs-current 
-
 RUN npm install
 
-COPY . .
+# Copy the rest of the application code
+COPY . ./
 
+# Build the application
 RUN npm run build
 
-RUN npm install -g serve
+# Stage 2: Serve the app with nginx
+FROM nginx:alpine AS deploy
 
-EXPOSE 3000
+# Copy build output from build stage
+COPY --from=build /app/dist /usr/share/nginx/html
 
-CMD ["serve", "-s", "dist"]
+# Add nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

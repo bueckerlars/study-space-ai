@@ -58,7 +58,7 @@ def ocr_images(image_files: List[str], language: str, show_progress: bool = True
         return False, all_results, f"Error during OCR processing: {str(e)}"
 
 def cleanup_images(image_files: List[str]) -> None:
-    # Löscht alle temporären Image-Dateien
+    # Deletes all temporary image files
     for img_file in image_files:
         try:
             os.remove(img_file)
@@ -66,19 +66,19 @@ def cleanup_images(image_files: List[str]) -> None:
             pass
 
 def extract_text_from_pdf(pdf_file: str, language: str = 'en', show_progress: bool = True, use_multithreading: bool = True, allow_ocr: bool = True) -> str:
-    # Direkt versuchen, Text aus dem PDF zu extrahieren
+    # First try to extract text directly from the PDF
     try:
         doc = fitz.open(pdf_file)
         direct_text = ""
         for page in doc:
             direct_text += page.get_text("text")
         if direct_text.strip():
-            return direct_text  # Gibt direkt extrahierten Text zurück, falls vorhanden
+            return direct_text  # Returns directly extracted text if available
     except Exception:
         pass
     if not allow_ocr:
-        return "Error: Kein Text im PDF gefunden und OCR ist deaktiviert."
-    # Fallback: OCR-Verarbeitung
+        return "Error: No text found in PDF and OCR is disabled."
+    # Fallback: OCR processing
     success, image_files, error = convert_pdf_to_images(pdf_file, show_progress)
     if not success:
         return ""
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     parser.add_argument("language", help="Language for OCR processing (e.g., 'en')")
     parser.add_argument("--output", required=True, help="Path to write output text file")
     parser.add_argument("--no-multithreading", action="store_true", help="Disable multithreading for OCR processing")
-    parser.add_argument("--disable-ocr", action="store_true", help="Disable OCR fallback if kein Text extrahiert werden kann")
+    parser.add_argument("--disable-ocr", action="store_true", help="Disable OCR fallback if no text can be extracted")
     args = parser.parse_args()
     
     use_multithreading = not args.no_multithreading

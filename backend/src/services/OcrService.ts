@@ -1,13 +1,15 @@
-import { exec } from 'child_process';
-import util from 'util';
+import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import databaseController from '../controllers/DatabaseController';
 import fileController from '../controllers/FileController';
-import fileService from './FileService'; // bestehende Hilfsfunktionen
-import logger from '../services/logger';  // Neuer Import für Logging
-const execPromise = util.promisify(exec);
+import fileService from './FileService';
+import logger from '../services/logger';
+import FormData from 'form-data';
+
+// Get OCR service URL from environment variable or use default
+const OCR_SERVICE_URL = process.env.OCR_SERVICE_URL || 'http://localhost:8000';
 
 class OcrService {
 	async processOcr(source_id: string): Promise<any> {
@@ -26,33 +28,50 @@ class OcrService {
 			const filename = sourceFile.url.split('/').pop()!;
 			const sourceFilePath = fileService.getFilePath(filename);
 			
-			// Berechne outputPath
-			const outputFilename = path.basename(sourceFilePath, path.extname(sourceFilePath)) + '_ocr.txt';
-			const outputPath = path.join(path.dirname(sourceFilePath), outputFilename);
+			// Prepare FormData for API request
+			const formData = new FormData();
+			formData.append('file', fs.createReadStream(sourceFilePath));
+			formData.append('language', 'de'); // Default language German
+			formData.append('use_multithreading', 'true');
+			formData.append('allow_ocr', 'true');
 			
-			// Führe ocr.py aus mit PDF-Dateipfad, Sprache "de" und output Pfad
-			const pythonScript = path.join(__dirname, '../../../src/python-scripts/ocr.py');
-			const command = `python3 ${pythonScript} ${sourceFilePath} "de" --output "${outputPath}" --no-multithreading`;
-			logger.info(`Executing OCR command: ${command}`);
-			logger.debug(`Starting execution with increased maxBuffer (10MB) for source_id: ${source_id}`);
-			const { stdout, stderr } = await execPromise(command, { maxBuffer: 1024 * 1024 * 10 });
-			logger.debug(`Command executed. stdout length: ${stdout.length}, stderr length: ${stderr ? stderr.length : 0}`);
-			if (stderr) {
-				throw new Error(stderr);
+			logger.info(`Sending PDF file to OCR service at ${OCR_SERVICE_URL}/ocr`);
+			
+			// Call the OCR service API using the regular OCR endpoint that returns text directly
+			const response = await axios.post(`${OCR_SERVICE_URL}/ocr`, formData, {
+				headers: {
+					...formData.getHeaders(),
+				},
+				maxBodyLength: Infinity,
+				maxContentLength: Infinity,
+			});
+			
+			if (!response.data || response.data.error) {
+				throw new Error(`OCR service error: ${response.data?.error || 'Unknown error'}`);
 			}
-			// Lese den vom Skript ausgegebenen absoluten Output-Pfad
-			const ocrOutputPath = stdout.trim();
-			logger.info(`OCR output written to ${ocrOutputPath}`);
 			
-			// Erstelle neuen File-Eintrag für die OCR-Ausgabe basierend auf dem vom Skript erzeugten File
+			logger.info(`OCR processing successful. Received text content.`);
+			
+			// Get OCR content directly from the response
+			const ocrContent = response.data.text;
+			
+			// Create output directory if it doesn't exist
+			const outputDir = path.dirname(sourceFilePath);
+			const outputFilename = `${path.basename(sourceFilePath, path.extname(sourceFilePath))}_ocr.txt`;
+			const localOutputPath = path.join(outputDir, outputFilename);
+			
+			// Save the OCR content to a local file
+			fs.writeFileSync(localOutputPath, ocrContent);
+			
+			// Erstelle neuen File-Eintrag für die OCR-Ausgabe
 			const ocrFileData = {
 				file_id: uuidv4(),
 				user_id: sourceFile.user_id,
 				project_id: sourceFile.project_id,
 				name: outputFilename,
-				size: fs.statSync(ocrOutputPath).size,
+				size: fs.statSync(localOutputPath).size,
 				type: 'text/plain',
-				url: ocrOutputPath,
+				url: localOutputPath,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			};

@@ -5,10 +5,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=/api
     ports:
-      - "3000:3000"
+      - "3000:80"  # Expose Nginx port 80 to host port 3000
     depends_on:
       - backend
+    restart: unless-stopped
+    networks:
+      - app-network
 
   backend:
     build:
@@ -17,6 +22,7 @@ services:
     ports:
       - "5066:5066"
     environment:
+      - PORT=5066
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
@@ -25,13 +31,18 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - LOG_LEVEL=INFO
       - OLLAMA_API_URL=http://host.docker.internal:11434
+      - OCR_SERVICE_URL=http://ocr-service:8000
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://frontend:80,http://frontend,http://frontent:3000,http://localhost:5173} 
     volumes:
       - upload_files:/app/uploads  # Mount the volume for file storage
     depends_on:
       - db
+    restart: unless-stopped
+    networks:
+      - app-network
 
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -40,7 +51,29 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  ocr-service:
+    build:
+      context: ./ocr-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - OCR_SERVICE_PORT=8000
+      - ALLOWED_ORIGINS=${CORS_ORIGIN:-http://localhost:5066,http://backend:5066,http://localhost:3000}
+    volumes:
+      - ocr_output:/app/output
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   db_data:
   upload_files:  # Define a volume for file uploads
+  ocr_output:    # Volume for OCR processing results
