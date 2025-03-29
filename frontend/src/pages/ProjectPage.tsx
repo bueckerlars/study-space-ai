@@ -9,8 +9,12 @@ import { Link, useParams } from 'react-router-dom';
 
 const ProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  const { project, loading } = useProject();
+  const { project, loading, setProjectId } = useProject();
   const { setTitle } = useHeader();
+
+  useEffect(() => {
+    setProjectId(projectId || null);
+  }, [projectId]);
 
   useEffect(()=> {
     setTitle(project?.name || 'Projekt');

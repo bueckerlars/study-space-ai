@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { deleteProjectRequest, getProjectByIdRequest, getSourcesByProjectRequest } from "@/services/ApiService";
+import { deleteProjectRequest, getSourcesByProjectRequest } from "@/services/ApiService";
 import { useAuth } from "@/provider/AuthProvider";
-import { Project, Source } from "@/types";
+import { Source } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { EditIcon, MoreVertical, TrashIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import EditProjectTitleDialog from "./EditProjectTitleDialog";
+import { useProject } from "@/provider/ProjectProvider";
 
 interface ProjectGaleryCardProps {
     projectId: string;
@@ -16,7 +17,7 @@ interface ProjectGaleryCardProps {
 const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     const { authToken } = useAuth();
     const navigate = useNavigate();
-    const [project, setProject] = useState<Project | null>(null);
+    const { project, refetchProject } = useProject();
     const [sources, setSources] = useState<Source[]>([]);
 
     const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -24,21 +25,6 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString();
     }
-
-    const fetchProject = () => {
-        getProjectByIdRequest(authToken!, projectId)
-            .then((response) => {
-                const project: Project = response.data;
-                setProject(project);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
-
-    useEffect(() => {
-        fetchProject();
-    }, []);
 
     useEffect(() => {
         getSourcesByProjectRequest(authToken!, projectId)
@@ -116,7 +102,7 @@ const ProjectGaleryCard = ({ projectId }: ProjectGaleryCardProps) => {
                 project={project} 
                 open={editDialogOpen} 
                 onOpenChanged={handleDialogOpenChanged} 
-                onProjectUpdated={fetchProject} // new prop for refetching
+                onProjectUpdated={refetchProject}
             />
         </>
     );

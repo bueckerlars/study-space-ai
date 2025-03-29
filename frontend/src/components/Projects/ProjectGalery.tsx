@@ -3,6 +3,7 @@ import { getUserProjectsRequest } from "@/services/ApiService";
 import { Project } from "@/types";
 import { useEffect, useState } from "react";
 import ProjectGaleryCard from "./ProjectGaleryCard";
+import { ProjectProvider } from "@/provider/ProjectProvider";
 
 const ProjectGalery = () => {
     const { authToken } = useAuth();    
@@ -28,7 +29,11 @@ const ProjectGalery = () => {
 
     return (
         <div className="grid grid-cols-3 gap-4 h-full flex-1 mt-6">
-            {projects.map((project) => (<ProjectGaleryCard key={project.project_id} projectId={project.project_id!} />))}
+            {projects.map((project) => (
+                <ProjectProvider key={project.project_id} initialProjectId={project.project_id!}>
+                    <ProjectGaleryCard key={project.project_id} projectId={project.project_id!} />
+                </ProjectProvider>
+            ))}
         </div>
     );
 }
