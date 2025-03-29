@@ -163,6 +163,30 @@ class AuthController {
       res.status(401).json({ message: error.message });
     }
   }
+
+  async changePassword(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      const { oldPassword, newPassword } = req.body;
+
+      // Validate input
+      if (!userId || !oldPassword || !newPassword) {
+        res.status(400).json({ message: 'User ID, old password, and new password are required' });
+        return;
+      }
+
+      // Change password
+      await AuthService.changePassword(userId, oldPassword, newPassword);
+
+      // Log successful password change
+      logger.info(`Password changed successfully for user ID: ${userId}`);
+
+      res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error: any) {
+      logger.error(`Password change error: ${error.message}`);
+      res.status(400).json({ message: error.message });
+    }
+  }
 }
 
 export default new AuthController();

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loginRequest, registerRequest, fetchUserRequest, refreshAccessTokenRequest, logoutRequest } from '../services/ApiService';
+import { loginRequest, registerRequest, fetchUserRequest, refreshAccessTokenRequest, logoutRequest, changePasswordRequest } from '../services/ApiService';
 import { User } from '../types';
 
 // Define AuthContextType
@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, username: string) => Promise<void>;
   logout: () => Promise<void>;
+  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -90,6 +91,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const changePassword = async (oldPassword: string, newPassword: string) => {
+    if (!authToken) {
+      throw new Error('User is not authenticated');
+    }
+
+    try {
+      await changePasswordRequest(authToken, oldPassword, newPassword);
+      console.log('Password changed successfully');
+    } catch (error) {
+      console.error('Password change failed:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     // Try to get user data if we have a token
     if (authToken) {
@@ -109,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [authToken]);
 
   return (
-    <AuthContext.Provider value={{ user, authToken, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, authToken, loading, login, register, logout, changePassword }}>
       {children}
     </AuthContext.Provider>
   );

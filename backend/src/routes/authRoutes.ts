@@ -157,4 +157,36 @@ router.post('/logout', AuthController.logout);
  */
 router.get('/me', AuthMiddleware.authenticate, AuthController.me);
 
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Change user password
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Not authenticated
+ */
+router.post('/change-password', AuthMiddleware.authenticate, AuthController.changePassword);
+
 export default router;

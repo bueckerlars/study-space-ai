@@ -126,6 +126,18 @@ export class DatabaseController {
     return this.delete('User', where);
   }
 
+  public async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
+    try {
+      const [updatedCount] = await this.update<User>('User', { password: hashedPassword }, { user_id: userId });
+      if (updatedCount === 0) {
+        throw new Error('Failed to update password: User not found');
+      }
+    } catch (error) {
+      logger.error(`Error updating user password: ${error instanceof Error ? error.message : String(error)}`);
+      throw error;
+    }
+  }
+
   // Project model methods
   public async createProject(data: Partial<Project>): Promise<Project | null> {
     return this.create<Project>('Project', data);

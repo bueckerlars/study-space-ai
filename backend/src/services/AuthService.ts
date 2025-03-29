@@ -131,6 +131,32 @@ class AuthService {
     }
   }
 
+  async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<void> {
+    logger.info(`Password change attempt for user ID: ${userId}`);
+
+    // Find user
+    const user = await databaseController.findUserById(userId);
+    if (!user) {
+      logger.warn(`Password change failed: User ID ${userId} not found`);
+      throw new Error('User not found');
+    }
+
+    // Verify old password
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      logger.warn(`Password change failed: Invalid old password for user ID ${userId}`);
+      throw new Error('Invalid old password');
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password in database
+    await databaseController.updateUserPassword(userId, hashedPassword);
+
+    logger.info(`Password changed successfully for user ID: ${userId}`);
+  }
+
   private generateToken(user: User): string {
     // Create payload without sensitive data
     const payload = {

@@ -13,6 +13,7 @@ import { ProjectsPage } from './pages/ProjectsPage.tsx'
 import ProjectPage from './pages/ProjectPage.tsx'
 import { ThemeProvider } from './provider/ThemeProvider.tsx'
 import { ProjectProvider } from './provider/ProjectProvider.tsx'
+import UserPage from './pages/UserPage.tsx'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,14 @@ const router = createBrowserRouter([
       {
         path: 'register',
         element: <RegisterPage />,
+      },
+      {
+        path: "user",
+        element: (
+          <ProtectedRoute>
+              <UserPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "settings",

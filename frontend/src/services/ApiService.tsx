@@ -69,6 +69,12 @@ export const logoutRequest = () => {
   return authApi.post('/logout');
 };
 
+export const changePasswordRequest = (authToken: string, oldPassword: string, newPassword: string) => {
+  return authApi.post('/change-password', { oldPassword, newPassword }, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+};
+
 // Project API functions
 export const createProjectRequest = (authToken: string, name: string, description?: string) => {
   return projectApi.post('/', { name, description }, {

@@ -16,10 +16,12 @@ const UserAvatarDropdown = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <div className="px-2 py-1.5">
-              <p className="text-sm font-medium">{user?.username}</p>
-              <p className="text-xs text-muted-foreground">{user?.email}</p>
-            </div>
+            <Link to="/user" className="flex w-full cursor-pointer">
+              <div className="px-2 py-1.5">
+                <p className="text-sm font-medium">{user?.username}</p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
+              </div>
+            </Link>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/settings" className="flex w-full cursor-pointer">
