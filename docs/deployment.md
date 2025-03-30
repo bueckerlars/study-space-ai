@@ -85,7 +85,7 @@ To build and run the application using Docker Compose, follow these steps:
    ```
 
 4. **Access the application:**
-   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Frontend: [http://localhost:3000](http://localhost:3000) 
    - Backend API: [http://localhost:5066](http://localhost:5066)
    - OCR Service: [http://localhost:8000](http://localhost:8000)
 

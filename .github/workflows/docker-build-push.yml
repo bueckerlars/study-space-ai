@@ -88,6 +88,8 @@ jobs:
           tag_name: ${{ env.FULL_TAG }}
           body: |
             ## Study Space AI ${{ env.FULL_TAG }}
+
+            Release Notes:
             
             Docker Images für diese Version:
             
@@ -101,87 +103,9 @@ jobs:
             
             ### OCR Service
             - Docker Hub: [larsbuecker/study-space-ocr-service:${{ env.FULL_TAG }}](https://hub.docker.com/r/larsbuecker/study-space-ocr-service/tags?name=${{ env.FULL_TAG }})
-            - `docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-ocr-service:${{ env.FULL_TAG }}`
-            
-            ### Deployment
-            
-            Diese Version kann mit folgendem Befehl gestartet werden:
-
-            ```yaml
-            version: '3.8'
-
-            services:
-              frontend:
-                image: ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-frontend:${{ env.FULL_TAG }}
-                ports:
-                  - "3000:80"
-                depends_on:
-                  - backend
-                restart: unless-stopped
-                networks:
-                  - app-network
-
-              backend:
-                image: ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-backend:${{ env.FULL_TAG }}
-                ports:
-                  - "5066:5066"
-                environment:
-                  - PORT=5066
-                  - DB_USERNAME=postgres
-                  - DB_PASSWORD=postgres
-                  - DB_NAME=studyspace
-                  - DB_HOST=db
-                  - DB_DIALECT=postgres
-                  - JWT_SECRET=your_jwt_secret
-                  - LOG_LEVEL=INFO
-                  - OLLAMA_API_URL=http://host.docker.internal:11434
-                  - OCR_SERVICE_URL=http://ocr-service:8000
-                  - CORS_ORIGIN=http://localhost:3000
-                volumes:
-                  - upload_files:/app/uploads
-                depends_on:
-                  - db
-                restart: unless-stopped
-                networks:
-                  - app-network
-
-              db:
-                image: postgres:15-alpine
-                environment:
-                  - POSTGRES_USER=postgres
-                  - POSTGRES_PASSWORD=postgres
-                  - POSTGRES_DB=studyspace
-                ports:
-                  - "5432:5432"
-                volumes:
-                  - db_data:/var/lib/postgresql/data
-                networks:
-                  - app-network
-
-              ocr-service:
-                image: ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-ocr-service:${{ env.FULL_TAG }}
-                ports:
-                  - "8000:8000"
-                environment:
-                  - OCR_SERVICE_PORT=8000
-                  - ALLOWED_ORIGINS=http://localhost:5066,http://backend:5066,http://localhost:3000
-                volumes:
-                  - ocr_output:/app/output
-                restart: unless-stopped
-                networks:
-                  - app-network
-
-            networks:
-              app-network:
-                driver: bridge
-
-            volumes:
-              db_data:
-              upload_files:
-              ocr_output:
-            ```
+            - `docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-ocr-service:${{ env.FULL_TAG }}`     
           generate_release_notes: true
-          draft: false
+          draft: true
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
