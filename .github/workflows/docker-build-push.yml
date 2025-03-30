@@ -43,7 +43,13 @@ jobs:
 
       - name: Extract full tag name
         id: get_full_tag
-        run: echo "FULL_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: |
+          if [[ "${GITHUB_REF}" =~ refs/tags/v(.+) ]]; then
+            echo "FULL_TAG=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          else
+            echo "Error: Tag does not match expected format 'v*'" >&2
+            exit 1
+          fi
 
       - name: Display version information
         run: |
