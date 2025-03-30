@@ -6,39 +6,55 @@ on:
       - 'v*'  # Wird ausgelöst, wenn ein Tag mit 'v' beginnt, z.B. v1.0.0
 
 jobs:
-  build-and-push:
-    name: Build and Push to Docker Hub
+  checkout:
+    name: Checkout Code
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
+  setup-docker:
+    name: Set up Docker Buildx
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
+  login-docker:
+    name: Login to Docker Hub
+    runs-on: ubuntu-latest
+    needs: setup-docker
+    steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      
-      # Extrahiere die Tag-Version ohne 'v' (z.B. v1.0.0 -> 1.0.0)
+
+  extract-version:
+    name: Extract Version Information
+    runs-on: ubuntu-latest
+    needs: login-docker
+    steps:
       - name: Extract version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-      
-      # Extrahiere die vollständige Tag-Version (z.B. v1.0.0)
+
       - name: Extract full tag name
         id: get_full_tag
         run: echo "FULL_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-      
+
       - name: Display version information
         run: |
           echo "Building with version: ${{ env.VERSION }}"
           echo "Full tag: ${{ env.FULL_TAG }}"
-      
-      # Frontend Service bauen und pushen
+
+  build-frontend:
+    name: Build and Push Frontend
+    runs-on: ubuntu-latest
+    needs: extract-version
+    steps:
       - name: Build and push frontend
         uses: docker/build-push-action@v5
         with:
@@ -50,8 +66,12 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-frontend:${{ env.FULL_TAG }}
           build-args: |
             VITE_API_URL=/api
-      
-      # Backend Service bauen und pushen
+
+  build-backend:
+    name: Build and Push Backend
+    runs-on: ubuntu-latest
+    needs: extract-version
+    steps:
       - name: Build and push backend
         uses: docker/build-push-action@v5
         with:
@@ -61,8 +81,12 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-backend:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-backend:${{ env.FULL_TAG }}
-      
-      # OCR Service bauen und pushen
+
+  build-ocr-service:
+    name: Build and Push OCR Service
+    runs-on: ubuntu-latest
+    needs: extract-version
+    steps:
       - name: Build and push ocr-service
         uses: docker/build-push-action@v5
         with:
@@ -72,15 +96,24 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-ocr-service:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-ocr-service:${{ env.FULL_TAG }}
-      
+
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend, build-ocr-service]
+    steps:
       - name: Summary
         run: |
           echo "Successfully built and pushed the following images:"
           echo "- ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-frontend:latest (${{ env.FULL_TAG }})"
           echo "- ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-backend:latest (${{ env.FULL_TAG }})"
           echo "- ${{ secrets.DOCKER_HUB_USERNAME }}/study-space-ocr-service:latest (${{ env.FULL_TAG }})"
-      
-      # Erstelle Release mit Links zu Docker Hub Images
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: summary
+    steps:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
