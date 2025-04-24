@@ -91,7 +91,7 @@ class OllamaService {
     );
 
     const themeResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
-      model: "deepseek-r1:8b",
+      model: "llama3.2",
       options: {
           system: "Du bist ein hilfreicher Assistent, der Kerninformationen aus Dokumenten extrahiert.",
       },
@@ -164,7 +164,7 @@ class OllamaService {
     const ollamaApiUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
     logger.info(`Sending prompt to Ollama API for project title generation`);
     const apiResponse = await axios.post(`${ollamaApiUrl}/api/generate`, {
-      model: 'deepseek-r1:8b',
+      model: 'llama3.2',
       options: {
       system: "You are a creative assistant that generates project titles based on provided themes that are not longer than 128 chars."
       },
