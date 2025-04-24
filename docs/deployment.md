@@ -16,7 +16,7 @@ To run the application locally for development purposes, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   git clone <your_repository_url>
+   git clone https://github.com/bueckerlars/study-space-ai.git
    cd StudySpace.AI
    ```
 
@@ -28,17 +28,17 @@ To run the application locally for development purposes, follow these steps:
      ```
    - Frontend:
      ```bash
-     cd ../frontend
+     cd frontend
      npm install
      ```
    - OCR Service:
      ```bash
-     cd ../ocr-service
+     cd ./ocr-service
      pip install -r requirements.txt
      ```
 
 3. **Set up environment variables:**
-   - Create `.env` files in the `backend`, `frontend`, and `ocr-service` directories based on the provided examples. Refer to the [Environment Variables Documentation](docs/enviroment.md) for details.
+   - Create `.env` files in the `backend`, `frontend`, `ocr-service` and `root` directories based on the provided examples. Refer to the [Environment Variables Documentation](docs/enviroment.md) for details.
 
 4. **Run the services:**
    - Backend:
