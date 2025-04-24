@@ -24,7 +24,7 @@ services:
       - DB_DIALECT=postgres
       - JWT_SECRET=<your-secret>          # Use a strong secret for JWT
       - LOG_LEVEL=INFO
-      - OLLAMA_API_URL=<your-ollama-api-url>                   # If running on docker host -> http://host.docker.internal:11434
+      - OLLAMA_API_URL=http://host.docker.internal:11434                  # If running on docker host -> http://host.docker.internal:11434
       - OCR_SERVICE_URL=http://ocr-service:8000
       - CORS_ORIGIN=${CORS_ORIGIN:-http://frontent:3000} 
     volumes:

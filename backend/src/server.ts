@@ -3,7 +3,8 @@ import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes';
 import serverConfig from './config/serverConfig';
-import swaggerSpecs from '../swagger';
+// Updated import path
+import swaggerSpecs from './swagger/swagger';
 import cors from 'cors';
 import logger from './services/logger';
 import fileRoutes from './routes/fileRoutes';

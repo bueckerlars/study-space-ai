@@ -1,5 +1,6 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import serverConfig from '../config/serverConfig';
+import path from 'path';
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -25,8 +26,15 @@ const options: swaggerJsdoc.Options = {
       }
     }
   },
-  // Path patterns to find your JSDoc comments that contain your OpenAPI annotations
-  apis: ['./src/routes/*.ts', './src/app.ts', './src/server.ts'],
+  // Use glob patterns that work in both development and production
+  apis: [
+    './dist/routes/*.js',
+    './dist/app.js',
+    './dist/server.js',
+    './src/routes/*.ts',
+    './src/app.ts',
+    './src/server.ts'
+  ],
 };
 
 const specs = swaggerJsdoc(options);
