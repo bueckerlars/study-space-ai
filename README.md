@@ -75,7 +75,7 @@ Make sure you have the following installed:
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your_repository_url>
+    git clone https://github.com/bueckerlars/study-space-ai.git
     cd StudySpace.AI
     ```
 
@@ -96,7 +96,7 @@ Make sure you have the following installed:
     ```
 
 4.  **Set up environment variables:**
-    - Create `.env` files in both the `backend` and `frontend` directories based on the `.env.example` files (if provided). Configure your database connection details, API keys, etc.
+    - Create `.env` files in both the `backend`, `frontend` and `root` directories based on the `.env.example` files (if provided). Configure your database connection details, API keys, etc.
 
 5.  **Set up the database:**
     - Create the necessary database and run migrations (if applicable, refer to backend documentation for specific instructions).
@@ -111,7 +111,7 @@ Make sure you have the following installed:
 
 1.  **Start the backend server:**
     ```bash
-    cd ../backend
+    cd ./backend
     npm run dev
     # or
     yarn dev
@@ -120,31 +120,19 @@ Make sure you have the following installed:
 
 2.  **Start the frontend development server:**
     ```bash
-    cd ../frontend
+    cd ./frontend
     npm run dev
     # or
     yarn dev
     ```
 
-3.  **Start the Python OCR service:**
-    - Run the Python script in a separate terminal:
-      ```bash
-      cd ../backend/python_ocr_service
-      python main.py
-      ```
-      (You might need to adjust this command based on your OCR service implementation)
-
-The frontend application should now be running at `http://localhost:<frontend_port>` (usually `3000` or `5173`), and the backend API at `http://localhost:<backend_port>` (usually `3000` or `4000`).
+The frontend application should now be running at `http://localhost:<frontend_port>` (usually `3000` or `5173`), and the backend API at `http://localhost:<backend_port>` (usually `5066`).
 
 ## API Documentation
 
 The backend API documentation will be available at `/api-docs` endpoint once the backend server is running (e.g., `http://localhost:<backend_port>/api-docs`).
 
 For detailed API documentation, refer to the [API Documentation](docs/api.md).
-
-## Contributing
-
-[Optional: Add information about how others can contribute to your project.]
 
 ## License
 
